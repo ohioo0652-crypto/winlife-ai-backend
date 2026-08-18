@@ -5,13 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Win Life · Accountability Partner - Track your progress, manifest your dreams, and level up your life with daily prayers, affirmations, and goal tracking." />
     <meta name="theme-color" content="#191228" />
-    <meta property="og:title" content="Win Life · Accountability Partner" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Solulu" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="icons/icon-192.png" />
+    <meta property="og:title" content="Solulu · Accountability Partner" />
     <meta property="og:description" content="Track your progress, manifest your dreams, and level up your life with daily prayers, affirmations, and goal tracking." />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://winlife.app" />
+    <meta property="og:url" content="https://solulu.app" />
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌸</text></svg>" />
-    <title>Win Life · Accountability Partner</title>
-    <noscript>🌸 Win Life requires JavaScript to work. Please enable JavaScript in your browser.</noscript>
+    <title>Solulu · Accountability Partner</title>
+    <noscript>🌸 Solulu requires JavaScript to work. Please enable JavaScript in your browser.</noscript>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Jost:wght@300;400;500;600&family=Caveat:wght@400;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Quicksand:wght@300;400;500&family=Space+Mono:ital@0;1&family=Great+Vibes&family=Oxygen:wght@300;400&family=Petit+Formal+Script&family=Satisfy&family=Alex+Brush&display=swap" rel="stylesheet" />
@@ -233,14 +239,33 @@
         .bookmark-entry .bookmark-date { font-size: 11px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
         .bookmark-entry .bookmark-preview { font-size: 14px; color: var(--cream); margin-top: 4px; font-family: 'Cormorant Garamond', serif; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 
-        .cal-grid-week { display: grid; grid-template-columns: 60px repeat(7, 1fr); gap: 2px; font-size: 11px; overflow-x: auto; min-width: 100%; }
-        .cal-grid-week .week-cell { min-height: 40px; border: 1px solid var(--border); border-radius: 6px; padding: 2px; background: var(--bg-card); }
-        .cal-grid-week .week-hour-label { padding: 4px; text-align: right; color: var(--muted); font-size: 10px; border-bottom: 1px solid var(--border); }
-        .cal-grid-week .week-day-header { text-align: center; font-size: 10px; padding: 4px; color: var(--muted); }
-        .cal-grid-week .week-day-header.today { color: var(--gold); font-weight: 600; }
-        .cal-grid-day { display: grid; grid-template-columns: 60px 1fr; gap: 2px; font-size: 12px; }
-        .cal-grid-day .day-cell { min-height: 45px; border: 1px solid var(--border); border-radius: 6px; padding: 4px; background: var(--bg-card); }
-        .cal-grid-day .day-hour-label { padding: 6px 4px; text-align: right; color: var(--muted); font-size: 10px; border-bottom: 1px solid var(--border); }
+        /* Solulu calendar: structured planning surface inspired by familiar calendar apps, with Solulu styling. */
+        .solulu-week-calendar { grid-column:1 / -1; display:grid; grid-template-columns:60px repeat(7,minmax(0,1fr)); grid-auto-rows:auto; width:100%; min-width:0; font-size:12px; border:1px solid var(--border); border-radius:14px; overflow:hidden; background:var(--bg-card); }
+        .week-corner { min-height:58px; background:var(--bg-card); border-bottom:1px solid var(--border); }
+        .week-header { min-height:58px; border:0; border-left:1px solid var(--border); border-bottom:1px solid var(--border); background:var(--bg-card); color:var(--muted); cursor:pointer; font-family:inherit; display:flex; flex-direction:column; justify-content:center; gap:2px; }
+        .week-header span { font-size:10px; text-transform:uppercase; letter-spacing:.08em; }
+        .week-header strong { font-size:17px; font-weight:600; color:var(--cream); }
+        .week-header:hover { background:var(--bg-card-hover); }
+        .week-header.today strong { color:var(--gold); }
+        .week-header.selected { background:color-mix(in srgb,var(--gold) 9%,var(--bg-card)); box-shadow:inset 0 -2px 0 var(--gold); }
+        .week-time,.day-time { min-height:58px; padding:8px 8px 0 4px; text-align:right; color:var(--muted); font-size:10px; border-right:1px solid var(--border); border-bottom:1px solid var(--border); background:var(--bg-card); }
+        .week-time.all-day-label,.day-time.all-day-label { min-height:42px; padding-top:14px; font-size:9px; letter-spacing:.05em; }
+        .week-all-day { min-height:42px; padding:5px; border-left:1px solid var(--border); border-bottom:1px solid var(--border); background:color-mix(in srgb,var(--gold) 3%,var(--bg-card)); }
+        .week-slot { position:relative; min-height:58px; padding:3px; border-left:1px solid var(--border); border-bottom:1px solid var(--border); background:var(--bg-card); cursor:pointer; transition:background .15s ease; }
+        .week-slot:hover,.day-slot:hover { background:color-mix(in srgb,var(--gold) 5%,var(--bg-card)); }
+        .week-slot.selected-day { background:color-mix(in srgb,var(--gold) 2.5%,var(--bg-card)); }
+        .calendar-event { width:100%; display:flex; flex-direction:column; align-items:flex-start; gap:1px; text-align:left; border:0; border-left:3px solid var(--event-color); border-radius:6px; padding:5px 7px; margin:1px 0; background:color-mix(in srgb,var(--event-color) 14%,transparent); color:var(--cream); font:500 11px/1.25 'Jost',sans-serif; cursor:pointer; overflow:hidden; }
+        .calendar-event:hover { background:color-mix(in srgb,var(--event-color) 22%,transparent); }
+        .calendar-event.done { opacity:.58; text-decoration:line-through; }
+        .calendar-event .event-time { font-size:9px; color:var(--muted); text-decoration:none; }
+        .calendar-event.compact { display:block; white-space:nowrap; text-overflow:ellipsis; padding:4px 6px; font-size:10px; }
+        .solulu-day-calendar { grid-column:1 / -1; display:grid; grid-template-columns:78px minmax(0,1fr); width:100%; min-width:0; border:1px solid var(--border); border-radius:14px; overflow:hidden; background:var(--bg-card); }
+        .day-all-day-row { display:contents; }
+        .day-all-day { min-height:48px; padding:6px; border-bottom:1px solid var(--border); background:color-mix(in srgb,var(--gold) 3%,var(--bg-card)); }
+        .day-slot { min-height:58px; padding:3px 8px; border-bottom:1px solid var(--border); position:relative; cursor:pointer; background:var(--bg-card); }
+        .empty-slot-label { color:var(--muted); font-size:10px; opacity:.7; }
+        .solulu-day-calendar.is-today .day-slot:hover { background:color-mix(in srgb,var(--gold) 5%,var(--bg-card)); }
+        @media (max-width:700px) { .solulu-week-calendar { min-width:0; grid-template-columns:40px repeat(7,minmax(0,1fr)); } .week-header { padding:0 1px; } .week-header span { font-size:9px; } .week-header strong { font-size:14px; } .solulu-day-calendar { min-width:0; grid-template-columns:65px minmax(0,1fr); } }
         .quick-add-row { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; align-items: center; background: var(--bg-card); padding: 12px; border-radius: 12px; border: 1px solid var(--border); }
         .quick-add-row input, .quick-add-row select { padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: color-mix(in srgb, var(--cream) 6%, transparent); color: var(--cream); font-size: 13px; font-family: 'Jost', sans-serif; min-height: 36px; }
         .quick-add-row input:focus, .quick-add-row select:focus { outline: none; border-color: var(--gold); }
@@ -641,7 +666,151 @@
             opacity: 0.7;
             box-shadow: 10px 0 30px rgba(0,0,0,0.3);
         }
-    </style>
+    @keyframes wlXpPulse{0%{transform:scale(1)}45%{transform:scale(1.035)}100%{transform:scale(1)}}@keyframes wlRewardIn{0%{opacity:0;transform:translateY(5px) scale(.98)}100%{opacity:1;transform:translateY(0) scale(1)}}.wl-xp-pulse{animation:wlXpPulse .55s ease-out}.wl-reward-in{animation:wlRewardIn .35s ease-out both}@media(prefers-reduced-motion:reduce){.wl-xp-pulse,.wl-reward-in{animation:none!important}}</style>
+
+<style id="solulu-calendar-final-polish">
+/* Solulu Calendar — purposeful, calm, continuous */
+#calViewTabs {
+  display:flex;
+  gap:6px;
+  margin-bottom:10px;
+  padding:4px;
+  border:1px solid var(--border);
+  border-radius:12px;
+  background:color-mix(in srgb, var(--bg-card) 82%, transparent);
+}
+#calViewTabs .btn {
+  flex:1;
+  min-height:34px;
+  border-radius:9px;
+  transition:transform .22s ease, background .22s ease, color .22s ease, box-shadow .22s ease;
+}
+#calViewTabs .btn.active {
+  background:color-mix(in srgb, var(--gold) 16%, var(--bg-card));
+  color:var(--gold-soft);
+  box-shadow:0 4px 16px color-mix(in srgb, var(--gold) 10%, transparent);
+}
+#calGrid {
+  position:relative;
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  overflow:hidden !important;
+  box-sizing:border-box;
+}
+#calGrid > .cal-grid-week,
+#calGrid > .cal-grid-day {
+  scrollbar-width:thin;
+  scrollbar-color:var(--gold) transparent;
+  scrollbar-gutter:auto;
+}
+#calGrid > .cal-grid-week::-webkit-scrollbar,
+#calGrid > .cal-grid-day::-webkit-scrollbar { width:6px; height:6px; }
+#calGrid > .cal-grid-week::-webkit-scrollbar-track,
+#calGrid > .cal-grid-day::-webkit-scrollbar-track { background:transparent !important; }
+#calGrid > .cal-grid-week::-webkit-scrollbar-thumb,
+#calGrid > .cal-grid-day::-webkit-scrollbar-thumb {
+  background:color-mix(in srgb,var(--gold) 55%,transparent);
+  border-radius:99px;
+}
+/* Keep the calendar useful without taking over the whole app. */
+#calGrid > .solulu-week-calendar {
+  width:100%;
+  max-width:100%;
+  box-sizing:border-box;
+  overflow:auto !important;
+  max-height:min(48vh,430px);
+  border-radius:12px;
+  scrollbar-width:thin;
+  scrollbar-color:var(--gold) transparent;
+}
+#calGrid > .solulu-day-calendar {
+  width:100%;
+  max-width:100%;
+  box-sizing:border-box;
+  overflow-y:auto !important;
+  max-height:min(48vh,430px);
+  border-radius:12px;
+  scrollbar-width:thin;
+  scrollbar-color:var(--gold) transparent;
+}
+#calGrid > .solulu-week-calendar::-webkit-scrollbar,
+#calGrid > .solulu-day-calendar::-webkit-scrollbar { width:6px; height:6px; }
+#calGrid > .solulu-week-calendar::-webkit-scrollbar-track,
+#calGrid > .solulu-day-calendar::-webkit-scrollbar-track { background:transparent; }
+#calGrid > .solulu-week-calendar::-webkit-scrollbar-thumb,
+#calGrid > .solulu-day-calendar::-webkit-scrollbar-thumb {
+  background:color-mix(in srgb,var(--gold) 45%,transparent);
+  border-radius:99px;
+}
+#calGrid .week-header { position:sticky; top:0; z-index:5; }
+#calGrid .week-corner { position:sticky; top:0; left:0; z-index:7; }
+#calGrid .week-time { position:sticky; left:0; z-index:4; }
+#calGrid .day-time { position:sticky; left:0; z-index:4; }
+@media (max-width:700px) {
+  #calGrid > .solulu-week-calendar { max-height:44vh; }
+  #calGrid > .solulu-day-calendar { max-height:44vh; }
+}
+#calGrid.cal-view-enter {
+  animation:soluluCalIn .28s cubic-bezier(.22,.61,.36,1);
+}
+@keyframes soluluCalIn {
+  from { opacity:.35; transform:translateX(18px); }
+  to { opacity:1; transform:translateX(0); }
+}
+#calTodayBtn[hidden] { display:none !important; }
+#calTodayBtn {
+  transition:opacity .2s ease, transform .2s ease;
+}
+@media (prefers-reduced-motion:reduce) {
+  #calGrid.cal-view-enter { animation:none; }
+}
+
+/* Quick event controls: add directly from the calendar date/time surface. */
+.calendar-add-event {
+  width:24px; height:24px; border-radius:50%; border:1px solid var(--border);
+  background:color-mix(in srgb,var(--bg-card) 86%,transparent); color:var(--gold-soft);
+  display:inline-flex; align-items:center; justify-content:center; font-size:16px; line-height:1;
+  cursor:pointer; opacity:.72; transition:opacity .18s ease, transform .18s ease, background .18s ease;
+}
+.calendar-add-event:hover { opacity:1; transform:scale(1.06); background:color-mix(in srgb,var(--gold) 12%,var(--bg-card)); }
+.week-header { position:relative; }
+.week-header .calendar-add-event { position:absolute; right:5px; top:5px; width:20px; height:20px; font-size:14px; }
+.week-slot { position:relative; min-height:42px; }
+.week-slot .calendar-add-event { position:absolute; right:5px; top:5px; opacity:0; }
+.week-slot:hover .calendar-add-event, .week-slot:focus-within .calendar-add-event { opacity:.72; }
+.week-all-day { position:relative; min-height:34px; }
+.week-all-day .calendar-add-event { position:absolute; right:4px; top:5px; }
+.day-slot { position:relative; min-height:42px; }
+.day-slot .calendar-add-event { position:absolute; right:7px; top:8px; opacity:0; }
+.day-slot:hover .calendar-add-event, .day-slot:focus-within .calendar-add-event { opacity:.72; }
+.day-all-day { position:relative; min-height:38px; }
+.day-all-day .calendar-add-event { position:absolute; right:7px; top:7px; }
+@media (max-width:700px) {
+  #calGrid > .solulu-week-calendar { min-width:0; }
+}
+</style>
+
+
+<style id="solulu-ai-close-final">
+#aiPanel { position:relative; }
+#aiPanel .ai-panel-head { position:relative; padding-right:42px; }
+#aiPanel .winlife-ai-close {
+  position:absolute; right:10px; top:8px;
+  width:30px; height:30px; border-radius:50%;
+  display:grid; place-items:center; z-index:20;
+  border:1px solid var(--border);
+  background:color-mix(in srgb,var(--bg-card) 88%,transparent);
+  color:var(--gold-soft); font:500 21px/1 'Jost',sans-serif;
+  cursor:pointer; transition:.18s ease;
+}
+#aiPanel .winlife-ai-close:hover {
+  transform:scale(1.06);
+  background:color-mix(in srgb,var(--gold) 13%,var(--bg-card));
+  color:var(--cream);
+}
+</style>
+
 </head>
 <body>
     <canvas id="confettiCanvas"></canvas>
@@ -655,8 +824,8 @@
             </div>
             <div class="hero">
                 <div class="halo-wrap"><div class="halo-ring r1"></div><div class="halo-ring r2"></div><div class="halo-orb"></div></div>
-                <div class="eyebrow">🌸 Level Up Your Life 🌸</div>
-                <h1 class="title">Win Life</h1>
+                <div class="eyebrow">🌸 Solulu 🌸</div>
+                <h1 class="title">Solulu</h1>
                 <p class="subtitle">Pray, affirm, envision, and level up your real life — one quest at a time. Unapologetically delulu.</p>
             </div>
             <div class="xp-bar-wrap" id="xpBar" role="button" tabindex="0" aria-label="View progress">
@@ -701,7 +870,7 @@
         <div class="ai-widget" id="aiWidget">
             <div class="ai-nudge-bubble" id="aiNudgeBubble"></div>
             <div class="ai-panel" id="aiPanel" role="dialog" aria-modal="true" aria-label="Solulu AI Chat">
-                <div class="ai-panel-head"><b>🌸 Solulu AI</b><span class="ai-panel-status offline" id="aiStatus">● Offline</span></div>
+                <div class="ai-panel-head"><b>🌸 Solulu AI</b><span class="ai-panel-status offline" id="aiStatus">● Offline</span><button type="button" id="aiPanelCloseBtn" class="winlife-ai-close" aria-label="Close Solulu AI" title="Close">×</button></div>
                 <div class="ai-panel-prompt" id="aiDailyPrompt">💭 What's one thing you're grateful for today?</div>
                 <div class="mini-goal-chat" id="miniGoalChat"></div>
                 <div id="miniGoalPlanWrap" style="max-height:140px; overflow-y:auto; margin-bottom:6px;"></div>
@@ -814,7 +983,7 @@
         </div>
 
         <!-- Onboarding -->
-        <div class="onboard-overlay" id="onboardOverlay" role="dialog" aria-modal="true" aria-label="Welcome to Win Life"><div class="onboard-card" id="onboardCard"></div></div>
+        <div class="onboard-overlay" id="onboardOverlay" role="dialog" aria-modal="true" aria-label="Welcome to Solulu"><div class="onboard-card" id="onboardCard"></div></div>
 
         <!-- App Lock -->
         <div class="app-lock-overlay" id="appLockOverlay" style="display:none;" role="dialog" aria-modal="true" aria-label="App Lock">
@@ -831,10 +1000,8 @@
     <!-- ============================================================ -->
     <script>
     // ======================================================
-    // ===== CONFIGURATION - ONLY CHANGE THIS ONE LINE =====
-    // For local development: 'http://localhost:3000/api/ai'
-    // For production: 'https://your-backend-url.com/api/ai'
-    const AI_API_URL = 'https://winlife-ai-backend.onrender.com/api/ai';
+    // Same-origin production API endpoint. The OpenAI key remains server-side.
+    const AI_API_URL = '/api/ai';
     // ======================================================
 
     // ===== UTILITY: ESCAPE HTML =====
@@ -1055,8 +1222,9 @@
         goalAnswers: Storage.get('goal-answers', { dream:'', timeframe:'', obstacle:'' }),
         goalChatLog: Storage.get('goal-chat-log', []),
         goalStep: Storage.get('goal-step', 0),
-        goalPlan: Storage.get('goal-plan', null),
+        goalPlan: null,
         goalChecked: Storage.get('goal-checked', []),
+        soluluMemory: Storage.get('solulu-memory', { facts: [], lastSeen: null }),
         focusToday: Storage.get('focus-today', { date:null, count:0 }),
         questBonusDate: Storage.get('quest-bonus-date', null),
         moodLog: Storage.get('mood-log', []),
@@ -1081,7 +1249,7 @@
         language: Storage.get('language', 'en'),
         selectedSound: Storage.get('selected-sound', 'ocean'),
         journalPaperStyle: Storage.get('journal-paper-style', 'white'),
-        calendarView: Storage.get('calendar-view', 'month'),
+        calendarView: Storage.get('calendar-view', 'month') || 'month',
         customFrequencies: Storage.get('custom-frequencies', []),
         monthlyReflections: Storage.get('monthly-reflections', {}),
         yearlyReflections: Storage.get('yearly-reflections', {}),
@@ -2102,6 +2270,8 @@
         state.xp = Math.max(0, state.xp + amount);
         const after = levelForXp(state.xp);
         renderXpBar();
+        const xpBarEl=document.getElementById('xpBar');
+        if(xpBarEl){xpBarEl.classList.remove('wl-xp-pulse');void xpBarEl.offsetWidth;xpBarEl.classList.add('wl-xp-pulse');setTimeout(()=>xpBarEl.classList.remove('wl-xp-pulse'),700);}
         Storage.set('xp-total', state.xp);
         if (amount > 0) showXpPopup(amount);
         if (after.min > before.min) { 
@@ -2208,7 +2378,7 @@
         <div class="streak-grid" id="streakGrid"></div>
       </div>
       <div class="card"><div style="text-align:center;"><div style="font-size:44px;" id="lvHeroIcon">🌙</div><div style="font-family:'Cormorant Garamond',serif; font-size:28px; color:var(--gold-soft);" id="lvHeroName">Awakening</div><div style="font-size:12.5px; color:var(--muted);" id="lvHeroXp">0 XP total</div></div><div id="levelRoadmap"></div></div>
-      <div class="card"><h2 id="achievementsTitle">Achievements 🏅</h2><div class="badge-grid" id="badgeGrid"></div></div>
+      <div class="card"><h2 id="achievementsTitle">Achievements 🏅</h2><div class="badge-grid" id="badgeGrid"></div></div>      <div class="card" id="aiProgressCard"><h2>✨ Your Progress with Solulu</h2><div class="sub">A personalized snapshot from your real Win Life activity.</div><button class="btn btn-primary btn-sm" id="generateProgressReportBtn" style="margin-top:10px;">Generate Progress Report</button><div id="aiProgressReport" style="margin-top:14px;line-height:1.65;color:var(--cream);"><span style="color:var(--muted);">Your personalized report will appear here.</span></div></div>
     </div>
 
     <div class="panel" data-panel="sats">
@@ -2448,7 +2618,7 @@
         </div>
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
           <button class="cal-nav-btn" id="calPrev">‹</button>
-          <span id="calMonthLabel" style="font-family:'Cormorant Garamond',serif; font-size:19px; color:var(--gold-soft);"></span>
+          <span style="display:flex;align-items:center;gap:8px;"><button class="btn btn-sm" id="calTodayBtn" type="button">Today</button><span id="calMonthLabel" style="font-family:'Cormorant Garamond',serif; font-size:19px; color:var(--gold-soft);"></span></span>
           <button class="cal-nav-btn" id="calNext">›</button>
         </div>
         <div class="cal-grid" id="calGrid"></div>
@@ -2781,9 +2951,9 @@
         
         let html = order.map(id => {
             const widget = allWidgets.find(x => x.id === id);
-if (!widget) return '';
-const hidden = state.widgetHidden.includes(id);
-const label = t(id, id.charAt(0).toUpperCase() + id.slice(1));
+            if (!widget) return '';
+            const hidden = state.widgetHidden.includes(id);
+            const label = t(id, id.charAt(0).toUpperCase() + id.slice(1));
             return `<div class="home-tile ${widgetEditMode ? 'editable' : ''}" data-go="${id}" draggable="${widgetEditMode}" style="${widgetEditMode ? 'border:2px dashed var(--gold); cursor:grab;' : ''} ${hidden ? 'opacity:0.4;' : ''}" role="button" tabindex="0" aria-label="${escapeHTML(label)}">
                 <div class="home-tile-icon">${escapeHTML(widget.icon)}</div>
                 <div class="home-tile-label">${escapeHTML(label)}</div>
@@ -4149,58 +4319,34 @@ const label = t(id, id.charAt(0).toUpperCase() + id.slice(1));
     }
 
     // ===== FOCUS TIMER =====
-    let focusInterval = null, focusPhaseState = 'idle', focusRemaining = 0;
-    const FOCUS_RING_CIRC = 553;
-    
-    function updateFocusTask() {
-        const today = todayStr();
-        const tasks = state.calendarTasks.filter(t => t.date === today && !t.done);
-        document.getElementById('focusTaskName').textContent = tasks.length > 0 ? tasks[0].text : t('noTaskScheduled', 'No task scheduled');
+    let focusInterval=null, focusPhaseState='idle', focusRemaining=0;
+    const FOCUS_RING_CIRC=553;
+    function getFocusTask(){const today=todayStr();return state.calendarTasks.find(x=>x.date===today&&!x.done&&!x.completedEarly)||null;}
+    function updateFocusTask(){const task=getFocusTask(),el=document.getElementById('focusTaskName');if(el)el.textContent=task?task.text:t('noTaskScheduled','No task scheduled');}
+    function setFocusRing(fraction){const ring=document.getElementById('focusRingFill');if(ring)ring.style.strokeDashoffset=FOCUS_RING_CIRC*(1-fraction);}
+    function focusRender(total){const el=document.getElementById('focusTime');if(el)el.textContent=formatTime(Math.max(focusRemaining,0));setFocusRing(total?1-focusRemaining/total:0);}
+    function focusFinishWork(){focusPhaseState='break';focusRemaining=parseInt(document.getElementById('focusBreakLen').value,10)||300;document.getElementById('focusPhase').textContent=t('break','Break');focusRender(focusRemaining);playChime();showToast(t('focusBreak','Focus complete. Take your break.'));}
+    function focusFinishBreak(){
+      if(focusInterval){clearInterval(focusInterval);focusInterval=null;}
+      focusPhaseState='idle';focusRemaining=parseInt(document.getElementById('focusWorkLen').value,10)||1500;
+      document.getElementById('focusPhase').textContent=t('done','Done!');document.getElementById('focusStartBtn').textContent=t('start','Start');focusRender(focusRemaining);
+      playChime();celebrate(.8);awardXp(20);
+      const today=todayStr();if(state.focusToday.date===today)state.focusToday.count++;else state.focusToday={date:today,count:1};
+      Storage.set('focus-today',state.focusToday);updateActivityStreak();renderStreaks();updateFocusTask();
+      showToast(t('focusDone','Focus session complete. Mark your task complete from Calendar when you are ready.'));
     }
-    
-    document.getElementById('focusStartBtn').addEventListener('click', () => {
-        if (focusInterval) { clearInterval(focusInterval); focusInterval = null; document.getElementById('focusStartBtn').textContent = t('start', 'Start'); return; }
-        focusPhaseState = 'work';
-        focusRemaining = parseInt(document.getElementById('focusWorkLen').value, 10);
-        document.getElementById('focusPhase').textContent = t('focusPhase', 'Focus');
-        document.getElementById('focusTime').textContent = formatTime(focusRemaining);
-        document.getElementById('focusStartBtn').textContent = t('stop', 'Stop');
-        focusInterval = setInterval(() => {
-            focusRemaining--;
-            document.getElementById('focusTime').textContent = formatTime(Math.max(focusRemaining, 0));
-            const total = parseInt(document.getElementById('focusWorkLen').value, 10);
-            setFocusRing(1 - (focusRemaining / total));
-            if (focusRemaining <= 0) {
-                clearInterval(focusInterval);
-                focusInterval = null;
-                document.getElementById('focusStartBtn').textContent = t('start', 'Start');
-                document.getElementById('focusPhase').textContent = t('done', 'Done!');
-                playChime();
-                celebrate(0.8);
-                awardXp(20);
-                const today = todayStr();
-                if (state.focusToday.date === today) state.focusToday.count++;
-                else state.focusToday = { date: today, count: 1 };
-                Storage.set('focus-today', state.focusToday);
-                updateActivityStreak();
-                renderStreaks();
-                const tasks = state.calendarTasks.filter(t => t.date === today && !t.done);
-                if (tasks.length > 0) { tasks[0].done = true; Storage.set('calendar-tasks', state.calendarTasks); showToast(t('focusDone', '✅ Task completed: {task}').replace('{task}', tasks[0].text)); updateFocusTask(); renderCalendar(); }
-            }
-        }, 1000);
+    document.getElementById('focusStartBtn').addEventListener('click',()=>{
+      if(focusInterval){clearInterval(focusInterval);focusInterval=null;document.getElementById('focusStartBtn').textContent=t('start','Start');return;}
+      if(focusPhaseState==='idle'){focusPhaseState='work';focusRemaining=parseInt(document.getElementById('focusWorkLen').value,10)||1500;}
+      const total=focusPhaseState==='break'?(parseInt(document.getElementById('focusBreakLen').value,10)||300):(parseInt(document.getElementById('focusWorkLen').value,10)||1500);
+      document.getElementById('focusPhase').textContent=focusPhaseState==='break'?t('break','Break'):t('focusPhase','Focus');
+      document.getElementById('focusStartBtn').textContent=t('stop','Stop');focusRender(total);
+      focusInterval=setInterval(()=>{focusRemaining--;focusRender(total);if(focusRemaining<=0){if(focusPhaseState==='work')focusFinishWork();else focusFinishBreak();}},1000);
     });
-    
-    document.getElementById('focusResetBtn').addEventListener('click', () => {
-        if (focusInterval) { clearInterval(focusInterval); focusInterval = null; }
-        focusPhaseState = 'idle';
-        document.getElementById('focusTime').textContent = formatTime(parseInt(document.getElementById('focusWorkLen').value, 10));
-        document.getElementById('focusPhase').textContent = t('focusPhase', 'Focus');
-        document.getElementById('focusStartBtn').textContent = t('start', 'Start');
-        setFocusRing(0);
-        updateFocusTask();
+    document.getElementById('focusResetBtn').addEventListener('click',()=>{
+      if(focusInterval){clearInterval(focusInterval);focusInterval=null;}focusPhaseState='idle';focusRemaining=parseInt(document.getElementById('focusWorkLen').value,10)||1500;
+      document.getElementById('focusTime').textContent=formatTime(focusRemaining);document.getElementById('focusPhase').textContent=t('focusPhase','Focus');document.getElementById('focusStartBtn').textContent=t('start','Start');setFocusRing(0);updateFocusTask();
     });
-    
-    function setFocusRing(fraction) { document.getElementById('focusRingFill').style.strokeDashoffset = FOCUS_RING_CIRC * (1 - fraction); }
 
     // ===== CALENDAR =====
     let calViewDate = new Date(), calSelectedDate = todayStr();
@@ -4217,6 +4363,14 @@ const label = t(id, id.charAt(0).toUpperCase() + id.slice(1));
         renderCalTasks();
         renderLiveRoutine();
         renderTimePicker();
+        updateCalendarTodayVisibility();
+    }
+
+    function formatCalendarHour(h) {
+        const n = Number(h);
+        const ap = n < 12 ? 'AM' : 'PM';
+        const hour = n % 12 || 12;
+        return `${hour}:00 ${ap}`;
     }
 
     function renderMonthView() {
@@ -4245,10 +4399,18 @@ const label = t(id, id.charAt(0).toUpperCase() + id.slice(1));
                 <span class="cal-day-date">${day}</span>
                 ${count > 0 ? `<span class="cal-dot"></span>` : ''}
                 ${count > 0 ? `<span class="cal-task-count">${count}</span>` : ''}
+                <button type="button" class="calendar-add-event" data-add-date="${key}" aria-label="Add event on ${key}" title="Add event">+</button>
             </div>`;
         }
         document.getElementById('calGrid').innerHTML = html;
         
+        document.querySelectorAll('.cal-day .calendar-add-event').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const date = this.dataset.addDate;
+                if (date) openCalendarQuickAdd(date);
+            });
+        });
         document.querySelectorAll('.cal-day').forEach(el => {
             el.addEventListener('click', function() {
                 const date = this.dataset.date;
@@ -4271,112 +4433,120 @@ const label = t(id, id.charAt(0).toUpperCase() + id.slice(1));
 
     function renderWeekView() {
         const startOfWeek = new Date(calViewDate);
+        startOfWeek.setHours(0,0,0,0);
         startOfWeek.setDate(startOfWeek.getDate() - ((startOfWeek.getDay() + 6) % 7));
-        document.getElementById('calMonthLabel').textContent = t('weekOf', 'Week of') + ' ' + startOfWeek.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
-        
+        document.getElementById('calMonthLabel').textContent = startOfWeek.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+
         const todayKey = todayStr();
-        let html = `<div class="cal-grid-week">`;
-        html += `<div style="padding:4px;color:var(--muted);font-size:10px;text-align:right;"></div>`;
-        
+        const hours = Array.from({length: 17}, (_, i) => i + 6); // 6 AM–10 PM
+        let html = `<div class="solulu-week-calendar">`;
+        html += `<div class="week-corner"></div>`;
         for (let i = 0; i < 7; i++) {
-            const d = new Date(startOfWeek);
-            d.setDate(d.getDate() + i);
-            const key = dateKey(d);
-            const isToday = key === todayKey;
-            html += `<div class="week-day-header ${isToday ? 'today' : ''}">${d.toLocaleDateString(undefined, { weekday: 'short' })} ${d.getDate()}</div>`;
+            const d = new Date(startOfWeek); d.setDate(d.getDate() + i);
+            const key = dateKey(d), selected = key === calSelectedDate, today = key === todayKey;
+            html += `<button class="week-header ${today ? 'today' : ''} ${selected ? 'selected' : ''}" data-date="${key}">
+                <span>${d.toLocaleDateString(undefined,{weekday:'short'})}</span><strong>${d.getDate()}</strong>
+                <span class="calendar-add-event" data-add-date="${key}" aria-hidden="true">+</span>
+            </button>`;
         }
-        
-        for (let h = 8; h < 20; h++) {
-            html += `<div class="week-hour-label">${h}:00</div>`;
+
+        // All-day / untimed tasks keep their own useful strip instead of disappearing.
+        html += `<div class="week-time all-day-label">ALL DAY</div>`;
+        for (let i = 0; i < 7; i++) {
+            const d = new Date(startOfWeek); d.setDate(d.getDate() + i); const key = dateKey(d);
+            const untimed = state.calendarTasks.filter(t => t.date === key && !t.time);
+            html += `<div class="week-all-day" data-date="${key}"><button type="button" class="calendar-add-event" data-add-date="${key}" aria-label="Add event on ${key}" title="Add event">+</button>${untimed.map(task => {
+                const color = task.color || '#E3B255';
+                return `<button class="calendar-event compact ${task.done ? 'done' : ''}" style="--event-color:${color}" data-task-id="${task.id}">${task.done?'✓ ':''}${escapeHTML(task.text)}</button>`;
+            }).join('')}</div>`;
+        }
+
+        hours.forEach(h => {
+            html += `<div class="week-time">${formatCalendarHour(h)}</div>`;
             for (let i = 0; i < 7; i++) {
-                const d = new Date(startOfWeek);
-                d.setDate(d.getDate() + i);
-                const key = dateKey(d);
-                const tasks = state.calendarTasks.filter(t => t.date === key && t.time && parseInt(t.time.split(':')[0]) === h);
-                html += `<div class="week-cell" data-date="${key}" data-hour="${h}">`;
+                const d = new Date(startOfWeek); d.setDate(d.getDate() + i); const key = dateKey(d);
+                const tasks = state.calendarTasks.filter(t => t.date === key && t.time && parseInt(t.time.split(':')[0],10) === h);
+                const selected = key === calSelectedDate;
+                html += `<div class="week-slot ${selected ? 'selected-day' : ''}" data-date="${key}" data-hour="${h}" role="button" tabindex="0"><button type="button" class="calendar-add-event" data-add-date="${key}" data-add-hour="${h}" aria-label="Add event at ${formatCalendarHour(h)}" title="Add event">+</button>`;
                 tasks.forEach(task => {
                     const color = task.color || '#E3B255';
-                    html += `<div style="background:${color}20;border-left:2px solid ${color};font-size:9px;padding:2px 4px;border-radius:3px;margin:1px 0;cursor:pointer;" onclick="window.toggleTask('${task.id}')">${task.done ? '✅ ' : ''}${escapeHTML(task.text)}</div>`;
+                    const mins = parseInt((task.time || '00:00').split(':')[1],10) || 0;
+                    html += `<button class="calendar-event ${task.done ? 'done' : ''}" style="--event-color:${color}" data-task-id="${task.id}" title="${escapeHTML(task.time || '')}">
+                        <span class="event-time">${escapeHTML(formatCalendarTime(task.time))}</span><span>${task.done?'✓ ':''}${escapeHTML(task.text)}</span>
+                    </button>`;
                 });
                 html += `</div>`;
             }
-        }
-        html += `</div>`;
-        
-        html += `<div class="quick-add-row">
-            <input id="weekQuickTaskInput" type="text" placeholder="${t('addTask', 'Add task...')}" style="flex:1; min-width:80px; padding:8px 12px; border-radius:8px; border:1px solid var(--border); background:color-mix(in srgb, var(--cream) 6%, transparent); color:var(--cream);" />
-            <input id="weekQuickTimeInput" type="time" style="flex:0 0 auto; padding:8px 12px; border-radius:8px; border:1px solid var(--border); background:color-mix(in srgb, var(--cream) 6%, transparent); color:var(--cream);" />
-            <select id="weekQuickDaySelect" style="flex:0 0 auto; padding:8px 12px; border-radius:8px; border:1px solid var(--border); background:color-mix(in srgb, var(--cream) 6%, transparent); color:var(--cream);">${Array.from({ length: 7 }, (_, i) => {
-                const d = new Date(startOfWeek);
-                d.setDate(d.getDate() + i);
-                const key = dateKey(d);
-                const label = d.toLocaleDateString(undefined, { weekday: 'short' }) + ' ' + d.getDate();
-                return `<option value="${key}">${escapeHTML(label)}</option>`;
-            }).join('')}</select>
-            <button class="btn btn-primary btn-sm" id="weekQuickAddBtn">➕ ${t('add', 'Add')}</button>
-        </div>`;
-        
-        document.getElementById('calGrid').innerHTML = html;
-        
-        document.getElementById('weekQuickAddBtn')?.addEventListener('click', function() {
-            const text = document.getElementById('weekQuickTaskInput').value.trim();
-            const time = document.getElementById('weekQuickTimeInput').value;
-            const date = document.getElementById('weekQuickDaySelect').value;
-            if (!text) { showToast(t('enterTask', 'Enter a task')); return; }
-            state.calendarTasks.push({ id: Date.now().toString(), date, text, time, done: false, completedEarly: false, color: '#E3B255' });
-            document.getElementById('weekQuickTaskInput').value = '';
-            document.getElementById('weekQuickTimeInput').value = '';
-            Storage.set('calendar-tasks', state.calendarTasks);
-            renderCalendar();
-            showToast(t('taskAdded', '✅ Task added'));
-            playChime();
-            awardXp(2);
         });
-        
-        document.getElementById('weekQuickTaskInput')?.addEventListener('keydown', (e) => { if (e.key === 'Enter') document.getElementById('weekQuickAddBtn')?.click(); });
+        html += `</div>`;
+        document.getElementById('calGrid').innerHTML = html;
+
+        document.querySelectorAll('.week-header .calendar-add-event,.week-all-day .calendar-add-event,.week-slot .calendar-add-event').forEach(btn => btn.addEventListener('click', e => {
+            e.stopPropagation();
+            const date = btn.dataset.addDate; const hour = btn.dataset.addHour;
+            if (date) openCalendarQuickAdd(date, hour !== undefined ? `${String(hour).padStart(2,'0')}:00` : '');
+        }));
+        document.querySelectorAll('.week-header,.week-slot,.week-all-day').forEach(el => el.addEventListener('click', e => {
+            if (e.target.closest('.calendar-event') || e.target.closest('.calendar-add-event')) return;
+            const date = el.dataset.date; if (!date) return;
+            calSelectedDate = date; calViewDate = new Date(date + 'T00:00:00'); renderCalendar();
+        }));
+        document.querySelectorAll('.calendar-event').forEach(el => el.addEventListener('click', e => {
+            e.stopPropagation(); window.toggleTask(el.dataset.taskId);
+        }));
+    }
+
+    function formatCalendarTime(time) {
+        if (!time) return '';
+        const [hh, mm] = time.split(':').map(Number);
+        const ap = hh >= 12 ? 'PM' : 'AM';
+        const h = hh % 12 || 12;
+        return `${h}:${String(mm || 0).padStart(2,'0')} ${ap}`;
     }
 
     function renderDayView() {
-        const d = new Date(calViewDate);
+        const d = new Date(calViewDate); d.setHours(0,0,0,0);
         document.getElementById('calMonthLabel').textContent = d.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
-        const key = dateKey(d);
-        
-        let html = `<div class="cal-grid-day">`;
-        for (let h = 6; h < 22; h++) {
-            const tasks = state.calendarTasks.filter(t => t.date === key && t.time && parseInt(t.time.split(':')[0]) === h);
-            html += `<div class="day-hour-label">${h}:00</div>`;
-            html += `<div class="day-cell" data-date="${key}" data-hour="${h}">`;
-            tasks.forEach(task => {
-                const color = task.color || '#E3B255';
-                html += `<div style="background:${color}20;border-left:2px solid ${color};font-size:10px;padding:2px 6px;border-radius:4px;margin:2px 0;cursor:pointer;display:inline-block;" onclick="window.toggleTask('${task.id}')">${task.done ? '✅ ' : ''}${escapeHTML(task.text)}</div>`;
+        const key = dateKey(d), today = key === todayStr();
+        const tasks = state.calendarTasks.filter(t => t.date === key);
+        let html = `<div class="solulu-day-calendar ${today ? 'is-today' : ''}">`;
+
+        const untimed = tasks.filter(t => !t.time);
+        html += `<div class="day-all-day-row"><div class="day-time all-day-label">ALL DAY</div><div class="day-all-day"><button type="button" class="calendar-add-event" data-add-date="${key}" aria-label="Add event on ${key}" title="Add event">+</button>${untimed.length ? untimed.map(task => {
+            const color=task.color||'#E3B255'; return `<button class="calendar-event compact ${task.done?'done':''}" style="--event-color:${color}" data-task-id="${task.id}">${task.done?'✓ ':''}${escapeHTML(task.text)}</button>`;
+        }).join('') : '<span class="empty-slot-label">No untimed tasks</span>'}</div></div>`;
+
+        for (let h = 6; h <= 22; h++) {
+            const hourTasks = tasks.filter(t => t.time && parseInt(t.time.split(':')[0],10) === h);
+            html += `<div class="day-time">${formatCalendarHour(h)}</div><div class="day-slot" data-date="${key}" data-hour="${h}" role="button" tabindex="0"><button type="button" class="calendar-add-event" data-add-date="${key}" data-add-hour="${h}" aria-label="Add event at ${formatCalendarHour(h)}" title="Add event">+</button>`;
+            hourTasks.forEach(task => {
+                const color=task.color||'#E3B255';
+                html += `<button class="calendar-event ${task.done?'done':''}" style="--event-color:${color}" data-task-id="${task.id}"><span class="event-time">${escapeHTML(formatCalendarTime(task.time))}</span><span>${task.done?'✓ ':''}${escapeHTML(task.text)}</span></button>`;
             });
             html += `</div>`;
         }
         html += `</div>`;
-        
-        html += `<div class="quick-add-row">
-            <input id="dayQuickTaskInput" type="text" placeholder="${t('addTask', 'Add task...')}" style="flex:1; min-width:80px; padding:8px 12px; border-radius:8px; border:1px solid var(--border); background:color-mix(in srgb, var(--cream) 6%, transparent); color:var(--cream);" />
-            <input id="dayQuickTimeInput" type="time" style="flex:0 0 auto; padding:8px 12px; border-radius:8px; border:1px solid var(--border); background:color-mix(in srgb, var(--cream) 6%, transparent); color:var(--cream);" />
-            <button class="btn btn-primary btn-sm" id="dayQuickAddBtn">➕ ${t('add', 'Add')}</button>
-        </div>`;
-        
         document.getElementById('calGrid').innerHTML = html;
-        
-        document.getElementById('dayQuickAddBtn')?.addEventListener('click', function() {
-            const text = document.getElementById('dayQuickTaskInput').value.trim();
-            const time = document.getElementById('dayQuickTimeInput').value;
-            if (!text) { showToast(t('enterTask', 'Enter a task')); return; }
-            state.calendarTasks.push({ id: Date.now().toString(), date: key, text, time, done: false, completedEarly: false, color: '#E3B255' });
-            document.getElementById('dayQuickTaskInput').value = '';
-            document.getElementById('dayQuickTimeInput').value = '';
-            Storage.set('calendar-tasks', state.calendarTasks);
-            renderCalendar();
-            showToast(t('taskAdded', '✅ Task added'));
-            playChime();
-            awardXp(2);
-        });
-        
-        document.getElementById('dayQuickTaskInput')?.addEventListener('keydown', (e) => { if (e.key === 'Enter') document.getElementById('dayQuickAddBtn')?.click(); });
+
+        document.querySelectorAll('.day-slot .calendar-add-event,.day-all-day .calendar-add-event').forEach(btn => btn.addEventListener('click', e => {
+            e.stopPropagation();
+            const date = btn.dataset.addDate; const hour = btn.dataset.addHour;
+            if (date) openCalendarQuickAdd(date, hour !== undefined ? `${String(hour).padStart(2,'0')}:00` : '');
+        }));
+        document.querySelectorAll('.day-slot,.day-all-day').forEach(el => el.addEventListener('click', e => {
+            if (e.target.closest('.calendar-event') || e.target.closest('.calendar-add-event')) return;
+            const hour = el.dataset.hour;
+            if (hour !== undefined) {
+                const time = `${String(hour).padStart(2,'0')}:00`;
+                const input = document.getElementById('calTaskTime');
+                if (input) input.value = time;
+                const text = document.getElementById('calTaskInput');
+                if (text) { text.focus(); showToast(`${formatCalendarTime(time)} selected — add your task`); }
+            }
+        }));
+        document.querySelectorAll('.calendar-event').forEach(el => el.addEventListener('click', e => {
+            e.stopPropagation(); window.toggleTask(el.dataset.taskId);
+        }));
     }
 
     window.toggleTask = function(taskId) {
@@ -4440,8 +4610,40 @@ const label = t(id, id.charAt(0).toUpperCase() + id.slice(1));
 
     document.getElementById('calViewTabs').addEventListener('click', e => {
         const btn = e.target.closest('[data-view]');
-        if (btn) { state.calendarView = btn.dataset.view; Storage.set('calendar-view', state.calendarView); renderCalendar(); }
+        if (!btn) return;
+        const nextView = btn.dataset.view;
+        if (calSelectedDate) {
+            const anchor = new Date(calSelectedDate + 'T00:00:00');
+            if (!Number.isNaN(anchor.getTime())) calViewDate = anchor;
+        }
+        state.calendarView = nextView;
+        Storage.set('calendar-view', state.calendarView);
+        renderCalendar();
     });
+    const calTodayBtn=document.getElementById('calTodayBtn');
+    if(calTodayBtn) calTodayBtn.addEventListener('click',()=>{const d=new Date();calViewDate=new Date(d);calSelectedDate=todayStr();renderCalendar();});
+    function updateCalendarTodayVisibility() {
+        const btn = document.getElementById('calTodayBtn');
+        if (!btn) return;
+        // "Today" is based on the date the user is actually viewing/selecting,
+        // not merely whether the surrounding month or week contains today.
+        // This keeps Today available whenever the user navigates away from today.
+        btn.hidden = calSelectedDate === todayStr();
+    }
+
+    function openCalendarQuickAdd(date, time='') {
+        calSelectedDate = date;
+        calViewDate = new Date(date + 'T00:00:00');
+        const input = document.getElementById('calTaskInput');
+        const timeInput = document.getElementById('calTaskTimeInput');
+        if (timeInput) timeInput.value = time || '';
+        renderCalendar();
+        if (input) {
+            input.focus();
+            input.scrollIntoView({ behavior:'smooth', block:'nearest' });
+        }
+        showToast(time ? `${formatCalendarTime(time)} selected — add your event` : 'Date selected — add your event');
+    }
 
     document.getElementById('calTaskAddBtn').addEventListener('click', async () => {
         const val = document.getElementById('calTaskInput').value.trim();
@@ -4488,17 +4690,12 @@ const label = t(id, id.charAt(0).toUpperCase() + id.slice(1));
         });
         const routineTasks = allTasks.map(t => ({ id: t.id, name: t.text, time: t.time, done: t.done || false, completedEarly: t.completedEarly || false, color: t.color || '#E3B255' }));
         
-        let currentTask = null, currentIndex = -1, nextTask = null;
-        for (let i = 0; i < routineTasks.length; i++) {
-            const task = routineTasks[i];
-            if (!task.time) continue;
-            if (!task.done && !task.completedEarly) { currentTask = task; currentIndex = i; break; }
-        }
-        if (currentTask) {
-            for (let i = currentIndex + 1; i < routineTasks.length; i++) {
-                if (!routineTasks[i].done && !routineTasks[i].completedEarly) { nextTask = routineTasks[i]; break; }
-            }
-        }
+        const minutesNow=now.getHours()*60+now.getMinutes();
+        const toMinutes=v=>{const m=String(v||'').match(/(\d{1,2}):(\d{2})\s*(AM|PM)?/i);if(!m)return null;let h=+m[1],mi=+m[2],ap=(m[3]||'').toUpperCase();if(ap==='PM'&&h<12)h+=12;if(ap==='AM'&&h===12)h=0;return h*60+mi;};
+        let currentTask=null,currentIndex=-1,nextTask=null;
+        const incomplete=routineTasks.map((task,index)=>({task,index,minutes:toMinutes(task.time)})).filter(x=>x.minutes!==null&&!x.task.done&&!x.task.completedEarly);
+        for(let i=0;i<incomplete.length;i++){const x=incomplete[i],next=incomplete[i+1],end=next?next.minutes:1440;if(minutesNow>=x.minutes&&minutesNow<end){currentTask=x.task;currentIndex=x.index;break;}}
+        if(currentTask){const up=incomplete.find(x=>x.minutes>minutesNow);if(up)nextTask=up.task;}else{const up=incomplete.find(x=>x.minutes>minutesNow);if(up)nextTask=up.task;else if(incomplete.length)nextTask=incomplete[0].task;}
         
         const allDone = routineTasks.length > 0 && routineTasks.every(t => t.done || t.completedEarly);
         const hasTasks = routineTasks.length > 0;
@@ -4524,6 +4721,8 @@ const label = t(id, id.charAt(0).toUpperCase() + id.slice(1));
                     <button class="btn btn-ghost btn-sm next-task-btn" data-task-id="${currentTask.id}" style="font-size:10px; padding:4px 10px;">⏩ ${t('next', 'Next')}</button>
                 </div>
             </div>`;
+        } else if (nextTask) {
+            html += `<div class="waiting-msg"><span style="font-weight:600;color:var(--gold-soft);">${t('upNext','Up next')}</span> · ${escapeHTML(nextTask.name)} · ${escapeHTML(nextTask.time)}</div>`;
         } else {
             html += `<div class="waiting-msg">⏳ ${t('noActiveTask', 'No active task. All tasks completed or none scheduled.')}</div>`;
         }
@@ -5294,6 +5493,20 @@ const label = t(id, id.charAt(0).toUpperCase() + id.slice(1));
         `;
     }
 
+    async function generateProgressReport(){
+      const wrap=document.getElementById('aiProgressReport'),btn=document.getElementById('generateProgressReportBtn');if(!wrap)return;
+      if(btn){btn.disabled=true;btn.textContent='Generating…';}wrap.innerHTML='<span style="color:var(--muted)">✨ Solulu is looking at your progress…</span>';
+      const context=buildSoluluContext([]);context.reportType='progress';context.progressSnapshot={
+        xp:state.xp||0,activityStreak:state.activityStreak?.count||0,focusSessions:state.focusToday?.count||0,
+        wins:Array.isArray(state.wins)?state.wins.length:0,mood:state.mood?.score??null,
+        journalEntries:Array.isArray(state.journalEntries)?state.journalEntries.length:0,
+        calendarTasks:Array.isArray(state.calendarTasks)?state.calendarTasks.length:0,
+        completedTasks:Array.isArray(state.calendarTasks)?state.calendarTasks.filter(x=>x.done||x.completedEarly).length:0,
+        goal:state.goalAnswers?.dream||state.goalAnswers?.goal||'',name:state.goalAnswers?.name||''
+      };
+      try{const r=await fetch(AI_API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:'Create my personalized Win Life progress report from the supplied activity snapshot. This is an AI progress report, not my written reflection. Use only supplied data. Mention what went well, one real pattern, and one gentle next step.',context})});const d=await r.json();if(!r.ok||!d.response)throw Error(d?.error||'Report unavailable');wrap.innerHTML=escapeHTML(d.response).replace(/\\n/g,'<br>');wrap.classList.add('wl-reward-in');Storage.set('ai-progress-report',{text:d.response,generatedAt:new Date().toISOString()});}catch(e){console.error('Progress report error:',e);wrap.innerHTML='<span style="color:var(--muted)">Could not generate the report right now. Your activity is still saved.</span>';}finally{if(btn){btn.disabled=false;btn.textContent='Generate Progress Report';}}
+    }
+    const progressReportBtn=document.getElementById('generateProgressReportBtn');if(progressReportBtn)progressReportBtn.addEventListener('click',generateProgressReport);
     // ===== AI WIDGET =====
     let aiStatusChecked = false;
     let aiRetryCount = 0;
@@ -5350,6 +5563,12 @@ const label = t(id, id.charAt(0).toUpperCase() + id.slice(1));
         }
     });
     
+    const aiPanelCloseBtn = document.getElementById('aiPanelCloseBtn');
+    if (aiPanelCloseBtn) aiPanelCloseBtn.addEventListener('click', e => {
+        e.preventDefault(); e.stopPropagation();
+        document.getElementById('aiPanel')?.classList.remove('open');
+    });
+
     function renderMiniGoalChat() {
         const mini = document.getElementById('miniGoalChat');
         mini.innerHTML = state.goalChatLog.slice(-8).map(m => `<div class="goal-msg ${m.role === 'user' ? 'user' : m.role === 'system' ? 'system' : 'coach'}">${escapeHTML(m.text)}</div>`).join('');
@@ -5414,156 +5633,148 @@ const label = t(id, id.charAt(0).toUpperCase() + id.slice(1));
         if (e.key === 'Enter') document.getElementById('miniGoalSendBtn').click();
     });
     
+    function buildSoluluContext(conversationHistory) {
+        const today = todayStr();
+        const tasks = (state.calendarTasks || []).filter(x => x.date === today);
+        const openTasks = tasks.filter(x => !x.done);
+        const wins = Array.isArray(state.winsLog) ? state.winsLog.slice(-6) : [];
+        const moods = Array.isArray(state.moodLog) ? state.moodLog.slice(-4) : [];
+        const memory = Array.isArray(state.soluluMemory?.facts) ? state.soluluMemory.facts.slice(-20) : [];
+        const goal = state.goalAnswers?.dream || state.onboardAnswers?.biggestGoal || '';
+        const activityStreak = state.activityStreak?.count || state.streak?.count || 0;
+
+        let priority = 'Answer the user naturally and stay on the current topic.';
+        if (openTasks.length) priority = `If relevant, start with "${openTasks[0].title || openTasks[0].text || 'the next open task'}".`;
+        else if (goal) priority = `If relevant, suggest one small concrete step toward "${goal}".`;
+        else if (activityStreak >= 3) priority = `If relevant, help protect the ${activityStreak}-day streak without pressure.`;
+
+        return {
+            name: state.onboardAnswers?.name || '',
+            goals: goal,
+            dream: goal,
+            timeframe: '',
+            obstacle: '',
+            goalContext: { dream: goal, timeframe: '', obstacle: '' },
+            mood: moods.length ? moods[moods.length - 1].score : 'not logged',
+            wins: state.wins || 0,
+            streak: state.streak?.count || 0,
+            activityStreak,
+            focus: state.onboardAnswers?.focus || '',
+            biggestGoal: state.onboardAnswers?.biggestGoal || '',
+            reminderTime: state.onboardAnswers?.reminderTime || '',
+            chronotype: state.onboardAnswers?.chronotype || '',
+            sleepGoal: state.onboardAnswers?.sleepGoal || '',
+            memory,
+            dailyIntelligence: {
+                today,
+                openTasks: openTasks.slice(0, 8).map(x => x.title || x.text || ''),
+                completedToday: tasks.filter(x => x.done).length,
+                recentWins: wins,
+                recentMood: moods,
+                streak: activityStreak,
+                priority
+            },
+            conversationHistory
+        };
+    }
+
     async function handleGoalSend(val) {
-        if (isAiRequestInProgress) {
-            showToast('⏳ Please wait for the current request to finish.');
-            return;
-        }
-        
-        pushGoalMsg('user', val);
-        
-        if (state.goalStep < 3) {
-            const questions = [
-                { key: 'dream', text: t('goalDreamQuestion', "What's a big dream you're working toward?") },
-                { key: 'timeframe', text: t('goalTimeframeQuestion', "What's your rough timeframe for this?") },
-                { key: 'obstacle', text: t('goalObstacleQuestion', "What's the one thing that usually gets in your way?") }
-            ];
-            state.goalAnswers[questions[state.goalStep].key] = val;
-            state.goalStep++;
+        if (isAiRequestInProgress) return;
+
+        const message = String(val || '').trim();
+        if (!message) return;
+
+        window.pushGoalMsg('user', message);
+
+        // One goal question only.
+        if (!state.goalAnswers.dream) {
+            state.goalAnswers.dream = message;
+            state.goalStep = 1;
             Storage.set('goal-answers', state.goalAnswers);
             Storage.set('goal-step', state.goalStep);
-            if (state.goalStep < 3) {
-                pushGoalMsg('coach', questions[state.goalStep].text);
-                renderMiniGoalChat();
-                Storage.set('goal-chat-log', state.goalChatLog);
-                return;
-            }
         }
-        
-        if (true) {
-            isAiRequestInProgress = true;
-            const chat = document.getElementById('miniGoalChat');
-            chat.insertAdjacentHTML('beforeend', `<div class="goal-msg ai-thinking" id="aiThinking">⏳ ${t('soluluThinking', 'Solulu is thinking...')}</div>`);
-            chat.scrollTop = chat.scrollHeight;
-            
-            const userName = state.onboardAnswers.name || 'friend';
-            const context = {
-                name: userName,
-                goals: state.goalAnswers.dream || '',
-                dream: state.goalAnswers.dream || '',
-                mood: state.moodLog.length > 0 ? state.moodLog[state.moodLog.length - 1].score : 'not logged',
-                wins: state.wins,
-                streak: state.streak.count,
-                activityStreak: state.activityStreak ? state.activityStreak.count : 0
-            };
-            
-            try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 60000);
-                
-                const response = await fetch(AI_API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: val, context: context }),
-                    signal: controller.signal
-                });
-                
-                clearTimeout(timeoutId);
-                
-                if (!response.ok) {
-                    throw new Error(`Server error: ${response.status}`);
-                }
-                
-                const data = await response.json();
-                const thinking = document.getElementById('aiThinking');
-                if (thinking) thinking.remove();
-                
-                if (data.error) {
-                    throw new Error(data.error);
-                }
-                
-                if (data.response && typeof data.response === 'string') {
-                    pushGoalMsg('coach', data.response);
-                } else {
-                    throw new Error('Invalid response format');
-                }
-            } catch (error) {
-                const thinking = document.getElementById('aiThinking');
-                if (thinking) thinking.remove();
-                
-                if (error.name === 'AbortError') {
-                    showToast('⏱️ ' + t('aiTimeout', 'Request timed out. Please try again.'));
-                } else if (error.message.includes('Server error')) {
-                    showToast('⚠️ ' + t('aiServerError', 'Server error. Please try again later.'));
-                } else if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
-                    showToast('📡 ' + t('aiNetworkError', 'Network error. Please check your connection.'));
-                } else {
-    showToast('❌ ' + t('aiError', 'Could not reach AI. Please try again later.'));
-}
 
-pushGoalMsg(
-    'coach',
-    'I could not get a response from Solulu right now. Please try again.'
-);
+        isAiRequestInProgress = true;
+        const chat = document.getElementById('miniGoalChat');
+
+        if (chat) {
+            chat.insertAdjacentHTML(
+                'beforeend',
+                '<div class="goal-msg ai-thinking" id="aiThinking">⏳ Solulu is thinking...</div>'
+            );
+            chat.scrollTop = chat.scrollHeight;
+        }
+
+        const conversationHistory = (state.goalChatLog || [])
+            .filter(m => m && typeof m.text === 'string' &&
+                (m.role === 'user' || m.role === 'coach'))
+            .slice(-12)
+            .map(m => ({
+                role: m.role === 'coach' ? 'assistant' : 'user',
+                content: m.text.trim()
+            }));
+
+        const context = buildSoluluContext(conversationHistory);
+
+        try {
+            const response = await fetch(AI_API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message, context })
+            });
+
+            const data = await response.json();
+
+            const thinking = document.getElementById('aiThinking');
+            if (thinking) thinking.remove();
+
+            if (!response.ok) {
+                throw new Error(data?.error || ('Server error: ' + response.status));
             }
-            
+
+            if (typeof data.response !== 'string' || !data.response.trim()) {
+                throw new Error('AI returned no response');
+            }
+
+            window.pushGoalMsg('coach', data.response.trim());
+        } catch (error) {
+            const thinking = document.getElementById('aiThinking');
+            if (thinking) thinking.remove();
+            console.error('Solulu AI error:', error);
+            showToast('❌ Solulu AI is temporarily unavailable. Please check your connection and try again.');
+        } finally {
             isAiRequestInProgress = false;
             renderMiniGoalChat();
             Storage.set('goal-chat-log', state.goalChatLog);
-            return;
         }
-        
-        pushGoalMsg('coach', t('creatingPlan', "Perfect! I'm going to create a personalized plan for you. Give me a moment..."));
-        renderMiniGoalChat();
-        const chat = document.getElementById('miniGoalChat');
-        chat.insertAdjacentHTML('beforeend', `<div class="goal-msg ai-thinking" id="planLoading">✨ ${t('creatingPlan', 'Creating your personalized plan...')}</div>`);
-        chat.scrollTop = chat.scrollHeight;
-        setTimeout(async () => {
-            const loading = document.getElementById('planLoading');
-            if (loading) loading.remove();
-            const dream = state.goalAnswers.dream || 'your goal';
-            const timeframe = state.goalAnswers.timeframe || 'a few weeks';
-            const obstacle = state.goalAnswers.obstacle || 'distraction';
-            const tasks = [
-                `${t('writeDown', 'Write down exactly what')} "${dream}" ${t('looksLike', 'looks like when achieved')}`,
-                `${t('breakDown', 'Break')} "${dream}" ${t('intoMilestones', 'into 3 smaller milestones')}`,
-                `${t('planFor', 'Plan how to handle')} "${obstacle}" ${t('whenItComes', 'when it comes up')}`,
-                `${t('scheduleHour', 'Schedule 1 focused hour this week for')} "${dream}"`,
-                `${t('reviewProgress', 'Review your progress and adjust your approach')}`
-            ];
-            const plan = [
-                { week: 1, tasks: tasks.slice(0, 2) },
-                { week: 2, tasks: tasks.slice(2, 4) },
-                { week: 3, tasks: tasks.slice(4) }
-            ];
-            const userName = state.onboardAnswers.name || 'friend';
-            const introResponses = [
-                `✨ ${userName}, ${t('heresYourPlan', "here's your personalized plan for")} "${dream}":`,
-                `🌟 ${userName}, ${t('createdRoadmap', "I've created a custom roadmap for")} "${dream}":`,
-                `💫 ${userName}, ${t('readyForThis', "you're so ready for this! Here's your plan:")}`
-            ];
-            const intro = introResponses[Math.floor(Math.random() * introResponses.length)];
-            pushGoalMsg('coach', intro);
-            state.goalPlan = plan;
-            Storage.set('goal-plan', state.goalPlan);
-            renderMiniGoalChat();
-            celebrate(1);
-            playChime();
-            awardXp(20);
-            showToast('📋 ' + t('planReady', 'Your plan is ready! Check the calendar for tasks.'));
-        }, 1500);
     }
-    
+
     function pushGoalMsg(role, text) {
         state.goalChatLog.push({ role, text });
         if (state.goalChatLog.length > 50) state.goalChatLog = state.goalChatLog.slice(-40);
+
+        // Keep a small, durable memory layer for personalization.
+        if (role === 'user' && text) {
+            const clean = String(text).trim();
+            if (clean.length >= 8) {
+                const existing = Array.isArray(state.soluluMemory?.facts) ? state.soluluMemory.facts : [];
+                const next = [...existing.filter(x => x !== clean), clean].slice(-20);
+                state.soluluMemory = { facts: next, lastSeen: new Date().toISOString() };
+                Storage.set('solulu-memory', state.soluluMemory);
+            }
+        }
     }
     
     document.getElementById('aiPanelFullBtn').addEventListener('click', async () => {
-        state.goalAnswers = { dream: '', timeframe: '', obstacle: '' };
+        // New conversation clears the chat, but keeps the user's saved goal context.
         state.goalChatLog = [];
-        state.goalStep = 0;
-        state.goalPlan = null;
+        if (state.goalPlan && state.goalAnswers && state.goalAnswers.dream) {
+            state.goalStep = 3;
+        } else {
+            state.goalAnswers = { dream: '', timeframe: '', obstacle: '' };
+            state.goalStep = 0;
+            state.goalPlan = null;
+        }
         state.goalChecked = [];
         const userName = state.onboardAnswers.name || 'friend';
         pushGoalMsg('coach', t('aiWelcome', `Hey ${userName}! I'm Solulu. What's a big dream you're working toward right now? 🌸`));
@@ -5827,26 +6038,126 @@ pushGoalMsg(
         }
     });
 
+    // ===== DAILY INTELLIGENCE =====
+    function getDailyIntelligence() {
+        const today = todayStr();
+        const tasks = (state.calendarTasks || []).filter(x => x.date === today);
+        const openTasks = tasks.filter(x => !x.done);
+        const wins = Array.isArray(state.winsLog) ? state.winsLog.slice(-5) : [];
+        const mood = Array.isArray(state.moodLog) ? state.moodLog.slice(-3) : [];
+        const streak = state.activityStreak?.count || state.streak?.count || 0;
+        const goal = state.goalAnswers?.dream || state.onboardAnswers?.biggestGoal || '';
+        const name = state.onboardAnswers?.name || 'there';
+
+        let priority = 'Take one small meaningful step today.';
+        if (openTasks.length) {
+            priority = `Start with "${openTasks[0].title || openTasks[0].text || 'your next task'}".`;
+        } else if (goal) {
+            priority = `Take one concrete step toward your goal: ${goal}.`;
+        } else if (streak >= 3) {
+            priority = `Protect your ${streak}-day streak with one easy win.`;
+        }
+
+        return {
+            name,
+            goal,
+            streak,
+            openTasks: openTasks.slice(0, 5).map(x => x.title || x.text || ''),
+            recentWins: wins,
+            recentMood: mood,
+            priority
+        };
+    }
+
+    // ===== PERSONALIZED NOTIFICATIONS =====
+    window.testWinLifeNotification = sendPersonalizedNotification;
+
+    function buildPersonalizedNotification() {
+        const name = state.onboardAnswers?.name || '';
+        const goal = state.goalAnswers?.dream || state.onboardAnswers?.biggestGoal || '';
+        const streak = state.activityStreak?.count || state.streak?.count || 0;
+        const tasks = (state.calendarTasks || []).filter(x => x.date === todayStr() && !x.done);
+        const wins = Array.isArray(state.winsLog) ? state.winsLog : [];
+        const recentWin = wins.length ? wins[wins.length - 1] : '';
+
+        let title = name ? `Hey ${name}` : 'A small Win Life nudge';
+        let body = 'One useful step today is enough.';
+
+        if (tasks.length) {
+            const task = tasks[0].title || tasks[0].text || 'your next task';
+            body = `Your next useful step: ${task}`;
+        } else if (recentWin) {
+            body = `You already made progress. Keep that momentum: ${recentWin}`;
+        } else if (streak >= 3) {
+            body = `Your ${streak}-day streak is going. Keep it simple today.`;
+        } else if (goal) {
+            body = `One small step toward ${goal} is enough for today.`;
+        }
+
+        return { title, body };
+    }
+
+    async function sendPersonalizedNotification() {
+        if (!('Notification' in window)) return false;
+        if (Notification.permission !== 'granted') return false;
+        const n = buildPersonalizedNotification();
+        new Notification(n.title, { body: n.body, icon: 'icon-192.png', tag: 'winlife-daily' });
+        return true;
+    }
+
     function scheduleInAppReminders() {
-        const reminderTimes = [
-            { delay: 30000, msg: t('reminderMorning', '🌅 Morning check-in: What\'s your intention for today?') },
-            { delay: 120000, msg: t('reminderAfternoon', '🌸 Afternoon check-in: How are you doing?') },
-            { delay: 240000, msg: t('reminderEvening', '🌙 Evening reflection: What went well today?') }
-        ];
-        
-        reminderTimes.forEach((reminder, index) => {
-            setTimeout(() => {
-                if (Notification.permission === 'granted') {
+        const personalized = buildPersonalizedNotification();
+
+        if (window.__winLifeReminderTimer) clearTimeout(window.__winLifeReminderTimer);
+
+        const name = state.onboardAnswers?.name || 'there';
+        const goal = state.goalAnswers?.dream || state.onboardAnswers?.biggestGoal || '';
+        const reminderTime = state.onboardAnswers?.reminderTime || '08:00';
+
+        const personalizedBody = () => {
+            const streak = state.activityStreak?.count || 0;
+            const today = todayStr();
+            const tasksLeft = (state.calendarTasks || []).filter(x => x.date === today && !x.done).length;
+
+            if (tasksLeft > 0) {
+                return `${name}, you have ${tasksLeft} thing${tasksLeft === 1 ? '' : 's'} left today. One small win is enough to move forward.`;
+            }
+            if (streak >= 3) {
+                return `${name}, your ${streak}-day streak is alive. Keep the momentum going. 🔥`;
+            }
+            if (goal) {
+                const shortGoal = goal.length > 90 ? goal.slice(0, 87) + '…' : goal;
+                return `${name}, a small step toward "${shortGoal}" is waiting for you today. 🌸`;
+            }
+            return `${name}, your Win Life check-in is ready. What matters most today?`;
+        };
+
+        const scheduleNext = () => {
+            const [hh, mm] = reminderTime.split(':').map(Number);
+            const now = new Date();
+            const next = new Date(now);
+            next.setHours(Number.isFinite(hh) ? hh : 8, Number.isFinite(mm) ? mm : 0, 0, 0);
+            if (next <= now) next.setDate(next.getDate() + 1);
+
+            const delay = Math.max(1000, next.getTime() - now.getTime());
+            window.__winLifeReminderTimer = setTimeout(() => {
+                const body = personalizedBody();
+
+                if ('Notification' in window && Notification.permission === 'granted') {
                     try {
-                        new Notification('Win Life ✨', { body: reminder.msg });
-                    } catch(e) {
-                        showToast('💡 ' + reminder.msg);
+                        new Notification(`Win Life ✨ ${name}`, { body, tag: 'winlife-daily-checkin' });
+                    } catch (e) {
+                        showToast('💡 ' + body);
                     }
                 } else {
-                    showToast('💡 ' + reminder.msg);
+                    showToast('💡 ' + body);
                 }
-            }, reminder.delay);
-        });
+
+                scheduleNext();
+            }, delay);
+        };
+
+        scheduleNext();
     }
 
     // ===== ONBOARDING =====
@@ -6064,8 +6375,17 @@ function maybeShowOnboarding() {
             else if (!focusDone) msg = t('nudgeFocus', "Ready for a focus block? 25 minutes could change everything. ⏱️");
             else if (!moodDone) msg = t('nudgeMood', "How are you feeling today? Log your mood for the graph. 🌸");
             else if (tasks.length) msg = `${t('nudgeTasks', 'You have')} ${tasks.length} ${t('nudgeTasksLeft', 'task(s) left today. You\'ve got this!')} 💪`;
-            else { const randomNudge = nudges[Math.floor(Math.random() * nudges.length)];
-                msg = randomNudge; }
+            else {
+                const name = state.onboardAnswers?.name || 'there';
+                const goal = state.goalAnswers?.dream || state.onboardAnswers?.biggestGoal || '';
+                if (goal) {
+                    const shortGoal = goal.length > 70 ? goal.slice(0, 67) + '…' : goal;
+                    msg = `${name}, you're building "${shortGoal}". Keep today's step small and real. 🌸`;
+                } else {
+                    const randomNudge = nudges[Math.floor(Math.random() * nudges.length)];
+                    msg = randomNudge;
+                }
+            }
             const bubble = document.getElementById('aiNudgeBubble');
             bubble.textContent = msg;
             bubble.classList.add('show');
@@ -6460,7 +6780,11 @@ function maybeShowOnboarding() {
 
         if (!state.goalChatLog.length) {
             const userName = state.onboardAnswers.name || 'friend';
-            pushGoalMsg('coach', t('aiWelcome', `Hey ${userName}! I'm Solulu. What's a big dream you're working toward right now? 🌸`));
+            if (state.goalPlan && state.goalAnswers && state.goalAnswers.dream) {
+                pushGoalMsg('coach', `Welcome back, ${userName}! I remember your goal: "${state.goalAnswers.dream}". What would you like to work on today? 🌸`);
+            } else {
+                pushGoalMsg('coach', t('aiWelcome', `Hey ${userName}! I'm Solulu. What's a big dream you're working toward right now? 🌸`));
+            }
             Storage.set('goal-chat-log', state.goalChatLog);
         }
         renderMiniGoalChat();
@@ -6495,7 +6819,32 @@ function maybeShowOnboarding() {
         }, 3000);
     }
 
+
+    // ===== GLOBAL HELPERS REQUIRED BY INIT + GOAL CHAT =====
+    window.pushGoalMsg = function(role, text) {
+        if (!state.goalChatLog) state.goalChatLog = [];
+        state.goalChatLog.push({ role, text });
+        if (state.goalChatLog.length > 50) {
+            state.goalChatLog = state.goalChatLog.slice(-40);
+        }
+    };
+
+    window.renderVoicePref = function() {
+        const el = document.getElementById('voicePrefOptions');
+        if (!el) return;
+        el.innerHTML = `
+            <div class="onboard-opt ${state.voicePref === 'female' ? 'selected' : ''}" data-voice="female" role="button" tabindex="0">👩 ${t('female', 'Female')}</div>
+            <div class="onboard-opt ${state.voicePref === 'male' ? 'selected' : ''}" data-voice="male" role="button" tabindex="0">👨 ${t('male', 'Male')}</div>
+            <div class="onboard-opt ${state.voicePref === 'auto' ? 'selected' : ''}" data-voice="auto" role="button" tabindex="0">🤷 ${t('any', 'Any')}</div>
+        `;
+    };
+
     init();
     </script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
+}
+</script>
 </body>
 </html>
