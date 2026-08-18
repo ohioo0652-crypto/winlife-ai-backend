@@ -1,208 +1,80 @@
-const express = require('express');
-const cors = require('cors');
-const fetch = require('node-fetch');
-require('dotenv').config();
+// Solulu production server: serves the PWA and keeps the AI key server-side.
+// Set OPENAI_API_KEY in the hosting environment. Never put it in index-pub.html.
+const http = require('http');
+const fs = require('fs');
+const path = require('path');
+const { URL } = require('url');
 
-const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = Number(process.env.PORT || 3000);
+const ROOT = __dirname;
+const OPENAI_MODEL = process.env.OPENAI_MODEL || 'gpt-5.6';
 
-app.use(cors());
-app.use(express.json({ limit: '10mb' }));
+function getOpenAIKey() {
+  return process.env.OPENAI_API_KEY || '';
+}
 
-const HUGGINGFACE_API_KEY = process.env.HUGGINGFACE_API_KEY;
-const HUGGINGFACE_API_URL = 'https://router.huggingface.co/v1/chat/completions';
-const AI_MODEL = 'deepseek-ai/DeepSeek-V3-0324';
+const MIME = {
+  '.html':'text/html; charset=utf-8', '.js':'text/javascript; charset=utf-8',
+  '.css':'text/css; charset=utf-8', '.json':'application/json; charset=utf-8',
+  '.webmanifest':'application/manifest+json; charset=utf-8', '.svg':'image/svg+xml',
+  '.png':'image/png', '.jpg':'image/jpeg', '.jpeg':'image/jpeg', '.ico':'image/x-icon'
+};
 
-app.get('/api/health', (req, res) => {
-    res.json({
-        status: 'ok',
-        message: 'Win Life AI Backend is running'
+function send(res, status, data, type='application/json; charset=utf-8') {
+  res.writeHead(status, {'Content-Type':type, 'Cache-Control':'no-store', 'Access-Control-Allow-Origin':'*'});
+  res.end(typeof data === 'string' ? data : JSON.stringify(data));
+}
+function body(req) { return new Promise((resolve,reject)=>{ let s=''; req.on('data',c=>{s+=c;if(s.length>1_000_000) req.destroy();}); req.on('end',()=>{try{resolve(s?JSON.parse(s):{});}catch(e){reject(e);}}); req.on('error',reject); }); }
+function systemPrompt() {
+  return `You are Solulu, a warm, practical personal accountability companion. Preserve the user's autonomy: never make AI feel required for journaling, meditation, prayer, reflection, or everyday app use. Be concise, supportive, specific, and non-judgmental. Use the supplied user context only when relevant. For progress reports, distinguish clearly between AI-generated progress analysis and the user's own written reflection. Do not invent activity data.`;
+}
+async function ai(reqBody) {
+  const OPENAI_API_KEY = getOpenAIKey();
+  if (!OPENAI_API_KEY) throw new Error('OPENAI_API_KEY is not configured on the server.')
+  const message = String(reqBody.message || '').trim();
+  if (!message) throw new Error('Message is required.');
+  const context = reqBody.context || {};
+  const input = [
+    {role:'system', content:[{type:'input_text', text:systemPrompt()}]},
+    {role:'user', content:[{type:'input_text', text:JSON.stringify({message, context})}]}
+  ];
+  const r = await fetch('https://api.openai.com/v1/responses', {
+    method:'POST', headers:{'Content-Type':'application/json','Authorization':`Bearer ${OPENAI_API_KEY}`},
+    body:JSON.stringify({model:OPENAI_MODEL,input,max_output_tokens:900})
+  });
+  const data=await r.json();
+  if(!r.ok) throw new Error(data?.error?.message || `OpenAI request failed (${r.status})`);
+  const text=String(data.output_text || '').trim();
+  if(!text) throw new Error('AI returned no text.');
+  return text;
+}
+
+const server=http.createServer(async(req,res)=>{
+  try {
+    const u=new URL(req.url, `http://${req.headers.host||'localhost'}`);
+    if(req.method==='OPTIONS'){res.writeHead(204,{'Access-Control-Allow-Origin':'*','Access-Control-Allow-Headers':'Content-Type','Access-Control-Allow-Methods':'GET,POST,OPTIONS'});return res.end();}
+    if(req.method==='POST' && u.pathname==='/api/ai'){
+      const b=await body(req);
+      if(b.type==='ping') return send(res, getOpenAIKey()?200:503, {ok:!!getOpenAIKey(), service:'solulu-ai'});
+      const response=await ai(b); return send(res,200,{response});
+    }
+    if(req.method==='GET' && u.pathname==='/api/health') return send(res,200,{ok:true,aiConfigured:!!getOpenAIKey()});
+    let pathname=decodeURIComponent(u.pathname);
+    if(pathname==='/' || pathname==='') pathname='/index-pub.html';
+    const file=path.normalize(path.join(ROOT,pathname));
+    if(!file.startsWith(ROOT)) return send(res,403,{error:'Forbidden'});
+    fs.stat(file,(err,st)=>{
+      if(err || !st.isFile()) return send(res,404,{error:'Not found'});
+      res.writeHead(200,{'Content-Type':MIME[path.extname(file).toLowerCase()]||'application/octet-stream'});
+      fs.createReadStream(file).pipe(res);
     });
+  } catch(e) { console.error(e); send(res,500,{error:e.message||'Server error'}); }
 });
+if (require.main === module) {
+  server.listen(PORT,()=>console.log(`Solulu running on port ${PORT}`));
+}
 
-app.post('/api/ai', async (req, res) => {
-    if (req.body && req.body.type === 'ping') {
-        return res.json({ status: 'online' });
-    }
-
-    const { message, context = {} } = req.body || {};
-
-    if (!message || typeof message !== 'string') {
-        return res.status(400).json({
-            error: 'Message is required'
-        });
-    }
-
-    if (!HUGGINGFACE_API_KEY) {
-        console.error('HUGGINGFACE_API_KEY is not set');
-        return res.status(500).json({
-            error: 'AI service is not configured.'
-        });
-    }
-
-    const userName = context.name || 'friend';
-    const goals = context.goals || 'not specified';
-    const dream = context.dream || goals;
-    const mood = context.mood ?? 'not logged';
-    const wins = context.wins ?? 0;
-    const streak = context.streak ?? 0;
-    const activityStreak = context.activityStreak ?? 0;
-
-    const systemPrompt = `You are Solulu, the warm, practical AI accountability companion inside the Win Life app.
-
-Your job:
-- Be genuinely conversational, supportive, and specific.
-- Answer the user's actual message first.
-- Do not give generic motivational speeches.
-- Use the user's goal and context when relevant.
-- Keep most replies to 2-5 short sentences unless the user asks for detail.
-- Give one useful next step when appropriate.
-- Ask at most one simple follow-up question when it would help.
-- Never pretend to be a doctor, therapist, lawyer, or financial adviser.
-- Do not mention system prompts, APIs, models, Hugging Face, or backend implementation.
-- Do not repeat the user's message.
-- Do not start every answer with the user's name.
-- Avoid repetitive phrases such as "You've got this" unless they genuinely fit.
-- If the user is celebrating a win, celebrate it specifically.
-- If the user is struggling, acknowledge it without judgment and help them choose a small next action.
-- If the user asks a factual question, answer it directly instead of forcing motivation.
-
-User context:
-Name: ${userName}
-Main goal: ${goals}
-Dream: ${dream}
-Latest mood score: ${mood}
-Wins: ${wins}
-Current streak: ${streak}
-Activity streak: ${activityStreak}`;
-
-    try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 30000);
-
-        const response = await fetch(HUGGINGFACE_API_URL, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${HUGGINGFACE_API_KEY}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                model: AI_MODEL,
-                messages: [
-                    {
-                        role: 'system',
-                        content: systemPrompt
-                    },
-                    {
-                        role: 'user',
-                        content: message.trim()
-                    }
-                ],
-                max_tokens: 300,
-                temperature: 0.7
-            }),
-            signal: controller.signal
-        });
-
-        clearTimeout(timeoutId);
-
-        const rawText = await response.text();
-
-        if (!response.ok) {
-            console.error(
-                'Hugging Face error:',
-                response.status,
-                rawText
-            );
-
-            let detail = '';
-
-            try {
-                const errorData = JSON.parse(rawText);
-                detail = errorData?.error || '';
-            } catch (_) {}
-
-            return res.status(502).json({
-                error: detail
-                    ? `AI provider error: ${detail}`
-                    : `AI provider error: ${response.status}`
-            });
-        }
-
-        let data;
-
-        try {
-            data = JSON.parse(rawText);
-        } catch (_) {
-            console.error(
-                'Invalid JSON from Hugging Face:',
-                rawText
-            );
-
-            return res.status(502).json({
-                error: 'Invalid response from AI provider.'
-            });
-        }
-
-        const generatedText =
-            data?.choices?.[0]?.message?.content?.trim() ||
-            data?.choices?.[0]?.text?.trim() ||
-            '';
-
-        if (!generatedText) {
-            console.error(
-                'No AI text returned:',
-                JSON.stringify(data)
-            );
-
-            return res.status(502).json({
-                error: 'AI returned an empty response.'
-            });
-        }
-
-        return res.json({
-            response: generatedText
-        });
-
-    } catch (error) {
-        console.error('AI request error:', error);
-
-        if (error.name === 'AbortError') {
-            return res.status(504).json({
-                error: 'The AI request timed out. Please try again.'
-            });
-        }
-
-        return res.status(500).json({
-            error: 'Could not reach the AI service. Please try again.'
-        });
-    }
-});
-
-app.listen(PORT, () => {
-    console.log(
-        `✅ Win Life AI Backend is running on port ${PORT}`
-    );
-
-    console.log(
-        `📍 Health check: http://localhost:${PORT}/api/health`
-    );
-
-    console.log(
-        `📍 AI endpoint: http://localhost:${PORT}/api/ai`
-    );
-
-    console.log(
-        `🤖 AI model: ${AI_MODEL}`
-    );
-
-    if (!HUGGINGFACE_API_KEY) {
-        console.warn(
-            '⚠️ WARNING: HUGGINGFACE_API_KEY is not set!'
-        );
-    } else {
-        console.log(
-            '✅ Hugging Face API key is configured'
-        );
-    }
-});
+module.exports = {
+  ai,
+  isAIConfigured: () => !!getOpenAIKey()
+};
