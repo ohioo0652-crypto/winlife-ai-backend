@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -2530,7 +2531,7 @@ document.getElementById = function(id) {
 // ===== END FIX =====
     // ======================================================
     // Same-origin production API endpoint. The OpenAI key remains server-side.
-    const AI_API_URL = '/api/ai';
+    const AI_API_URL = 'https://winlife-ai-backend.vercel.app/api/ai';
     // ======================================================
 
     // ===== UTILITY: ESCAPE HTML =====
@@ -5741,111 +5742,118 @@ document.getElementById = function(id) {
     
     // ===== DRAW CANVAS SETUP =====
     function setupJournalCanvas() {
-        const canvas = document.getElementById('journalCanvas');
-        if (!canvas) return;
-        
-        // Ensure canvas has proper dimensions
+    const canvas = document.getElementById('journalCanvas');
+    if (!canvas) return;
+    
+    const rect = canvas.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    if (rect.width > 0) {
+        canvas.width = rect.width * dpr;
+        canvas.height = 260 * dpr;
+        canvas.style.width = rect.width + 'px';
+        canvas.style.height = '260px';
+    }
+    
+    const ctx = canvas.getContext('2d');
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.scale(dpr, dpr);
+    ctx.fillStyle = 'transparent';
+    ctx.fillRect(0, 0, canvas.width / dpr, canvas.height / dpr);
+    drawHistory = [];
+    historyIndex = -1;
+    
+    let isDrawing = false;
+    let lastX = 0;
+    let lastY = 0;
+    
+    function getCanvasCoords(e) {
         const rect = canvas.getBoundingClientRect();
         const dpr = window.devicePixelRatio || 1;
-        if (rect.width > 0) {
-            canvas.width = rect.width * dpr;
-            canvas.height = 260 * dpr;
-            canvas.style.width = rect.width + 'px';
-            canvas.style.height = '260px';
+        const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+        const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+        if (clientX === undefined) return { x: 0, y: 0 };
+        return {
+            x: (clientX - rect.left) * (canvas.width / (rect.width * dpr)),
+            y: (clientY - rect.top) * (canvas.height / (rect.height * dpr))
+        };
+    }
+    
+    function startDrawing(e) {
+        if (journalMode !== 'draw') return;
+        e.preventDefault();
+        isDrawing = true;
+        const coords = getCanvasCoords(e);
+        lastX = coords.x;
+        lastY = coords.y;
+        
+        drawHistory = drawHistory.slice(0, historyIndex + 1);
+        drawHistory.push(canvas.toDataURL());
+        historyIndex = drawHistory.length - 1;
+        if (drawHistory.length > 30) {
+            drawHistory.shift();
+            historyIndex--;
         }
         
         const ctx = canvas.getContext('2d');
+        const dpr = window.devicePixelRatio || 1;
         ctx.setTransform(1, 0, 0, 1, 0, 0);
         ctx.scale(dpr, dpr);
-        ctx.fillStyle = 'transparent';
-        ctx.fillRect(0, 0, canvas.width / dpr, canvas.height / dpr);
-        drawHistory = [];
-        historyIndex = -1;
+        ctx.beginPath();
+        ctx.arc(lastX / dpr, lastY / dpr, Math.max(1, (journalPenSize / dpr) / 2), 0, Math.PI * 2);
+        ctx.fillStyle = journalPenColor;
+        ctx.fill();
         
-        // Store drawing state
-        let isDrawing = false;
-        let lastX = 0;
-        let lastY = 0;
+        journalHasUnsavedChanges = true;
+    }
+    
+    function draw(e) {
+        if (!isDrawing || journalMode !== 'draw') return;
+        e.preventDefault();
+        const ctx = canvas.getContext('2d');
+        const dpr = window.devicePixelRatio || 1;
         
-        function getCanvasCoords(e) {
-            const rect = canvas.getBoundingClientRect();
-            const dpr = window.devicePixelRatio || 1;
-            const clientX = e.clientX || (e.touches && e.touches[0].clientX);
-            const clientY = e.clientY || (e.touches && e.touches[0].clientY);
-            if (clientX === undefined) return { x: 0, y: 0 };
-            return {
-                x: (clientX - rect.left) * (canvas.width / (rect.width * dpr)),
-                y: (clientY - rect.top) * (canvas.height / (rect.height * dpr))
-            };
-        }
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.scale(dpr, dpr);
         
-        function startDrawing(e) {
-            if (journalMode !== 'draw') return;
-            e.preventDefault();
-            isDrawing = true;
-            const coords = getCanvasCoords(e);
-            lastX = coords.x;
-            lastY = coords.y;
-            
-            // Save state for undo
+        const coords = getCanvasCoords(e);
+        
+        ctx.beginPath();
+        ctx.moveTo(lastX / dpr, lastY / dpr);
+        ctx.lineTo(coords.x / dpr, coords.y / dpr);
+        ctx.strokeStyle = journalPenColor;
+        ctx.lineWidth = Math.max(1, journalPenSize / dpr);
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.stroke();
+        
+        lastX = coords.x;
+        lastY = coords.y;
+        journalHasUnsavedChanges = true;
+    }
+    
+    function stopDrawing(e) {
+        if (isDrawing) {
+            isDrawing = false;
             drawHistory = drawHistory.slice(0, historyIndex + 1);
             drawHistory.push(canvas.toDataURL());
             historyIndex = drawHistory.length - 1;
-            if (drawHistory.length > 30) {
-                drawHistory.shift();
-                historyIndex--;
-            }
             journalHasUnsavedChanges = true;
         }
-        
-        function draw(e) {
-            if (!isDrawing || journalMode !== 'draw') return;
-            e.preventDefault();
-            const ctx = canvas.getContext('2d');
-            const dpr = window.devicePixelRatio || 1;
-            ctx.setTransform(1, 0, 0, 1, 0, 0);
-            ctx.scale(dpr, dpr);
-            
-            const coords = getCanvasCoords(e);
-            ctx.beginPath();
-            ctx.moveTo(lastX / dpr, lastY / dpr);
-            ctx.lineTo(coords.x / dpr, coords.y / dpr);
-            ctx.strokeStyle = journalPenColor;
-            ctx.lineWidth = journalPenSize;
-            ctx.lineCap = 'round';
-            ctx.lineJoin = 'round';
-            ctx.stroke();
-            
-            lastX = coords.x;
-            lastY = coords.y;
-            journalHasUnsavedChanges = true;
-        }
-        
-        function stopDrawing(e) {
-            if (isDrawing) {
-                isDrawing = false;
-                // Save state after stroke
-                drawHistory = drawHistory.slice(0, historyIndex + 1);
-                drawHistory.push(canvas.toDataURL());
-                historyIndex = drawHistory.length - 1;
-                journalHasUnsavedChanges = true;
-            }
-        }
-        
-        // Mouse events
-        canvas.addEventListener('mousedown', startDrawing);
-        canvas.addEventListener('mousemove', draw);
-        canvas.addEventListener('mouseup', stopDrawing);
-        canvas.addEventListener('mouseleave', stopDrawing);
-        
-        // Touch events
-        canvas.addEventListener('touchstart', startDrawing, { passive: false });
-        canvas.addEventListener('touchmove', draw, { passive: false });
-        canvas.addEventListener('touchend', stopDrawing, { passive: false });
-        canvas.addEventListener('touchcancel', stopDrawing, { passive: false });
-        
-        return ctx;
     }
+    
+    canvas.addEventListener('mousedown', startDrawing);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', stopDrawing);
+    canvas.addEventListener('mouseleave', stopDrawing);
+    
+    canvas.addEventListener('touchstart', startDrawing, { passive: false });
+    canvas.addEventListener('touchmove', draw, { passive: false });
+    canvas.addEventListener('touchend', stopDrawing, { passive: false });
+    canvas.addEventListener('touchcancel', stopDrawing, { passive: false });
+    
+    return ctx;
+}
+        
     
     function loadJournalPage() {
         const page = currentJournalPage();
@@ -5880,7 +5888,71 @@ document.getElementById = function(id) {
         renderBookmarksView();
         document.getElementById('journalSearchResults').style.display = 'none';
         journalHasUnsavedChanges = false;
+    }    // ===== JOURNAL CLEAR & UNDO BUTTONS =====
+    document.getElementById('journalClearBtn').addEventListener('click', function() {
+        const canvas = document.getElementById('journalCanvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const dpr = window.devicePixelRatio || 1;
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.scale(dpr, dpr);
+        ctx.fillStyle = 'transparent';
+        ctx.fillRect(0, 0, canvas.width / dpr, canvas.height / dpr);
+        drawHistory = [];
+        historyIndex = -1;
+        journalHasUnsavedChanges = true;
+        showToast('🎨 Canvas cleared');
+    });
+
+    document.getElementById('journalUndoBtn').addEventListener('click', function() {
+        const canvas = document.getElementById('journalCanvas');
+        if (!canvas) return;
+        if (historyIndex <= 0) {
+            showToast('Nothing to undo');
+            return;
+        }
+        historyIndex--;
+        const ctx = canvas.getContext('2d');
+        const dpr = window.devicePixelRatio || 1;
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.scale(dpr, dpr);
+        ctx.fillStyle = 'transparent';
+        ctx.fillRect(0, 0, canvas.width / dpr, canvas.height / dpr);
+        if (drawHistory[historyIndex]) {
+            const img = new Image();
+            img.onload = () => {
+                ctx.drawImage(img, 0, 0, canvas.width / dpr, canvas.height / dpr);
+            };
+            img.src = drawHistory[historyIndex];
+        }
+        journalHasUnsavedChanges = true;
+        showToast('↩️ Undo');
+    });// ===== PEN COLOR AND SIZE HANDLERS =====
+document.querySelectorAll('.pen-swatch').forEach(swatch => {
+    swatch.addEventListener('click', function() {
+        document.querySelectorAll('.pen-swatch').forEach(s => s.classList.remove('active'));
+        this.classList.add('active');
+        journalPenColor = this.dataset.color;
+        const canvas = document.getElementById('journalCanvas');
+        if (canvas) {
+            const ctx = canvas.getContext('2d');
+            ctx.strokeStyle = journalPenColor;
+        }
+        showToast('🎨 Color changed');
+    });
+});
+
+document.getElementById('penSizeRange').addEventListener('input', function() {
+    journalPenSize = parseInt(this.value, 10);
+    const canvas = document.getElementById('journalCanvas');
+    if (canvas) {
+        const ctx = canvas.getContext('2d');
+        const dpr = window.devicePixelRatio || 1;
+        ctx.lineWidth = Math.max(1, journalPenSize / dpr);
     }
+});
 
     // ===== SOUND PLAYER =====
     let soundContext = null, soundNodes = [], isSoundPlaying = false, currentSoundId = null;
@@ -8265,7 +8337,7 @@ document.getElementById = function(id) {
                 document.getElementById('onboardOverlay').classList.remove('open');
                 showTab('home');
                 const userName = state.onboardAnswers.name || 'friend';
-                showToast('🎉 ' + t('welcomeToWinLife', 'Welcome to Win Life') + ', ' + userName + '! ' + t('youreAmazing', "You're amazing!"));
+                showToast('🎉 ' + t('welcomeToWinLife', 'Welcome to SoluluMind') + ', ' + userName + '! ' + t('youreAmazing', "You're amazing!"));
                 celebrate(2);
                 playChime();
                 awardXp(25);
