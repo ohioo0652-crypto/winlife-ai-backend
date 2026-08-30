@@ -6,7 +6,7 @@ const { URL } = require('url');
 
 const PORT = Number(process.env.PORT || 3000);
 const ROOT = __dirname;
-const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
+const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-3.6-flash';
 
 function getGeminiKey() {
   return process.env.GEMINI_API_KEY || '';
@@ -209,3 +209,4 @@ module.exports = {
   ai,
   isAIConfigured: () => !!getGeminiKey()
 };
+
