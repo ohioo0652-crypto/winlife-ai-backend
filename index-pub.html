@@ -7531,7 +7531,7 @@ document.getElementById = function(id) {
             const response = await fetch(AI_API_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ type: 'ping' }),
+                body: JSON.stringify({ message: 'ping', history: [] }),
                 signal: controller.signal
             });
             clearTimeout(timeoutId);
@@ -8916,5 +8916,6 @@ if ('serviceWorker' in navigator) {
 </script>
 </body>
 </html>
+
 
 
