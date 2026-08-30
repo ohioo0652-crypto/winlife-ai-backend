@@ -8,7 +8,7 @@ const PORT = Number(process.env.PORT || 3000);
 const ROOT = __dirname;
 
 const GROQ_MODEL =
-  process.env.GROQ_MODEL || 'llama-3.3-70b-versatile';
+  process.env.GROQ_MODEL || 'openai/gpt-oss-120b';
 
 function getGroqKey() {
   return process.env.GROQ_API_KEY || '';
@@ -239,3 +239,4 @@ module.exports = {
   ai,
   isAIConfigured: () => !!getGroqKey()
 };
+
