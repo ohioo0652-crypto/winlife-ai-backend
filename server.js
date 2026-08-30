@@ -6,11 +6,9 @@ const { URL } = require('url');
 
 const PORT = Number(process.env.PORT || 3000);
 const ROOT = __dirname;
-const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-3.6-flash';
+const GROQ_MODEL = process.env.GROQ_MODEL || 'llama-3.3-70b-versatile';
 
-function getGeminiKey() {
-  return process.env.GEMINI_API_KEY || '';
-}
+function getGroqKey() { return process.env.GROQ_API_KEY || ''; }
 
 const MIME = {
   '.html':'text/html; charset=utf-8',
@@ -209,4 +207,5 @@ module.exports = {
   ai,
   isAIConfigured: () => !!getGeminiKey()
 };
+
 
