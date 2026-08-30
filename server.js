@@ -6,30 +6,42 @@ const { URL } = require('url');
 
 const PORT = Number(process.env.PORT || 3000);
 const ROOT = __dirname;
-const GROQ_MODEL = process.env.GROQ_MODEL || 'llama-3.3-70b-versatile';
 
-function getGroqKey() { return process.env.GROQ_API_KEY || ''; }
+const GROQ_MODEL =
+  process.env.GROQ_MODEL || 'llama-3.3-70b-versatile';
+
+function getGroqKey() {
+  return process.env.GROQ_API_KEY || '';
+}
 
 const MIME = {
-  '.html':'text/html; charset=utf-8',
-  '.js':'text/javascript; charset=utf-8',
-  '.css':'text/css; charset=utf-8',
-  '.json':'application/json; charset=utf-8',
-  '.webmanifest':'application/manifest+json; charset=utf-8',
-  '.svg':'image/svg+xml',
-  '.png':'image/png',
-  '.jpg':'image/jpeg',
-  '.jpeg':'image/jpeg',
-  '.ico':'image/x-icon'
+  '.html': 'text/html; charset=utf-8',
+  '.js': 'text/javascript; charset=utf-8',
+  '.css': 'text/css; charset=utf-8',
+  '.json': 'application/json; charset=utf-8',
+  '.webmanifest': 'application/manifest+json; charset=utf-8',
+  '.svg': 'image/svg+xml',
+  '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.ico': 'image/x-icon'
 };
 
-function send(res, status, data, type='application/json; charset=utf-8') {
+function send(
+  res,
+  status,
+  data,
+  type = 'application/json; charset=utf-8'
+) {
   res.writeHead(status, {
     'Content-Type': type,
     'Cache-Control': 'no-store',
     'Access-Control-Allow-Origin': '*'
   });
-  res.end(typeof data === 'string' ? data : JSON.stringify(data));
+
+  res.end(
+    typeof data === 'string' ? data : JSON.stringify(data)
+  );
 }
 
 function body(req) {
@@ -38,7 +50,10 @@ function body(req) {
 
     req.on('data', c => {
       s += c;
-      if (s.length > 1000000) req.destroy();
+
+      if (s.length > 1000000) {
+        req.destroy();
+      }
     });
 
     req.on('end', () => {
@@ -58,10 +73,12 @@ function systemPrompt() {
 }
 
 async function ai(reqBody) {
-  const GEMINI_API_KEY = getGeminiKey();
+  const GROQ_API_KEY = getGroqKey();
 
-  if (!GEMINI_API_KEY) {
-    throw new Error('GEMINI_API_KEY is not configured on the server.');
+  if (!GROQ_API_KEY) {
+    throw new Error(
+      'GROQ_API_KEY is not configured on the server.'
+    );
   }
 
   const message = String(reqBody.message || '').trim();
@@ -80,42 +97,43 @@ ${message}
 User context:
 ${JSON.stringify(context)}`;
 
-  const url =
-    `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${encodeURIComponent(GEMINI_API_KEY)}`;
-
-  const r = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      contents: [
-        {
-          parts: [
-            {
-              text: prompt
-            }
-          ]
-        }
-      ],
-      generationConfig: {
-        maxOutputTokens: 900
-      }
-    })
-  });
+  const r = await fetch(
+    'https://api.groq.com/openai/v1/chat/completions',
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${GROQ_API_KEY}`
+      },
+      body: JSON.stringify({
+        model: GROQ_MODEL,
+        messages: [
+          {
+            role: 'system',
+            content: systemPrompt()
+          },
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        max_tokens: 900,
+        temperature: 0.7
+      })
+    }
+  );
 
   const data = await r.json();
 
   if (!r.ok) {
     throw new Error(
-      data?.error?.message || `Gemini request failed (${r.status})`
+      data?.error?.message ||
+        `Groq request failed (${r.status})`
     );
   }
 
   const text = String(
-    data?.candidates?.[0]?.content?.parts
-      ?.map(part => part.text || '')
-      .join('') || ''
+    data?.choices?.[0]?.message?.content || ''
   ).trim();
 
   if (!text) {
@@ -138,6 +156,7 @@ const server = http.createServer(async (req, res) => {
         'Access-Control-Allow-Headers': 'Content-Type',
         'Access-Control-Allow-Methods': 'GET,POST,OPTIONS'
       });
+
       return res.end();
     }
 
@@ -145,10 +164,14 @@ const server = http.createServer(async (req, res) => {
       const b = await body(req);
 
       if (b.type === 'ping') {
-        return send(res, getGeminiKey() ? 200 : 503, {
-          ok: !!getGeminiKey(),
-          service: 'solulu-ai'
-        });
+        return send(
+          res,
+          getGroqKey() ? 200 : 503,
+          {
+            ok: !!getGroqKey(),
+            service: 'solulu-ai'
+          }
+        );
       }
 
       const response = await ai(b);
@@ -156,10 +179,13 @@ const server = http.createServer(async (req, res) => {
       return send(res, 200, { response });
     }
 
-    if (req.method === 'GET' && u.pathname === '/api/health') {
+    if (
+      req.method === 'GET' &&
+      u.pathname === '/api/health'
+    ) {
       return send(res, 200, {
         ok: true,
-        aiConfigured: !!getGeminiKey()
+        aiConfigured: !!getGroqKey()
       });
     }
 
@@ -169,15 +195,21 @@ const server = http.createServer(async (req, res) => {
       pathname = '/index-pub.html';
     }
 
-    const file = path.normalize(path.join(ROOT, pathname));
+    const file = path.normalize(
+      path.join(ROOT, pathname)
+    );
 
     if (!file.startsWith(ROOT)) {
-      return send(res, 403, { error: 'Forbidden' });
+      return send(res, 403, {
+        error: 'Forbidden'
+      });
     }
 
     fs.stat(file, (err, st) => {
       if (err || !st.isFile()) {
-        return send(res, 404, { error: 'Not found' });
+        return send(res, 404, {
+          error: 'Not found'
+        });
       }
 
       res.writeHead(200, {
@@ -188,9 +220,9 @@ const server = http.createServer(async (req, res) => {
 
       fs.createReadStream(file).pipe(res);
     });
-
   } catch (e) {
     console.error(e);
+
     send(res, 500, {
       error: e.message || 'Server error'
     });
@@ -205,7 +237,5 @@ if (require.main === module) {
 
 module.exports = {
   ai,
-  isAIConfigured: () => !!getGeminiKey()
+  isAIConfigured: () => !!getGroqKey()
 };
-
-
