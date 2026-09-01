@@ -9243,7 +9243,7 @@ Return plain text only.`;
         let progressHtml = `<div class="onboard-step-indicator">${Array.from({ length: totalOnboardSteps }, (_, i) => `<div class="onboard-step-dot ${i === step ? 'active' : ''}"></div>`).join('')}</div><div class="onboard-progress-text">${t('step', 'Step')} ${step + 1} ${t('of', 'of')} ${totalOnboardSteps}</div>`;
 
         if (step === 0) {
-            card.innerHTML = `${progressHtml}<div class="onboard-icon">🌙</div><div class="onboard-title">${t('welcomeToSolulu', '🌸 Welcome to SoluluMind 🌸')}</div><div class="onboard-text">${t('onboardIntro', "I'm Solulu, your AI accountability partner. What's your name?")}</div><input class="onboard-input" id="onboardNameInput" type="text" placeholder="${t('yourName', 'Your name')}" value="${escapeAttr(state.onboardAnswers.name || '')}" /><button class="btn btn-primary" id="onboardNextBtn" style="width:100%;" disabled>${t('continue', 'Continue')}</button>`;
+            card.innerHTML = `${progressHtml}<div class="onboard-icon">🌙</div><div class="onboard-title">${t('welcomeToSoluluMind', '🌸 Welcome to SoluluMind 🌸')}</div><div class="onboard-text">${t('onboardIntro', "I'm Solulu, your AI accountability partner. What's your name?")}</div><input class="onboard-input" id="onboardNameInput" type="text" placeholder="${t('yourName', 'Your name')}" value="${escapeAttr(state.onboardAnswers.name || '')}" /><button class="btn btn-primary" id="onboardNextBtn" style="width:100%;" disabled>${t('continue', 'Continue')}</button>`;
 
             const nameInput = document.getElementById('onboardNameInput');
             const nextBtn = document.getElementById('onboardNextBtn');
