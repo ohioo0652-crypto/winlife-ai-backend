@@ -10743,5 +10743,26 @@ if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
 }
 </script>
+<script>
+(function () {
+  function fixSoluluMindGreeting() {
+    document.querySelectorAll('.onboarding-title').forEach(function (el) {
+      if (el.textContent.trim() === 'Solulu' ||
+          el.textContent.trim() === 'Welcome to Solulu') {
+        el.textContent = 'Welcome to Solulu Mind';
+      }
+    });
+  }
+
+  fixSoluluMindGreeting();
+
+  new MutationObserver(fixSoluluMindGreeting).observe(document.body, {
+    childList: true,
+    subtree: true,
+    characterData: true
+  });
+})();
+</script>
+
 </body>
 </html>
