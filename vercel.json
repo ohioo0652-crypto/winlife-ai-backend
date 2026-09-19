@@ -4,5 +4,8 @@
       "source": "/",
       "destination": "/index-pub.html"
     }
+  ],
+  "crons": [
+    { "path": "/api/push", "schedule": "0 * * * *" }
   ]
 }
