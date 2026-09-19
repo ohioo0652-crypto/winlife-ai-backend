@@ -1,4 +1,4 @@
-const BACKEND = 'https://winlife-ai-backend-k1dqb0csq-solulu1.vercel.app';
+const BACKEND = 'https://winlife-ai-backend.vercel.app';
 const VAPID_PUBLIC_KEY = 'BHyJEEwNxjMHlEc72kxu9onKGxKUdq0-PbcJzmZ_xMb5mmgqtGAMYzf_xgmwLswNvH3k9ZV5OVGFcU2kudbcYwg';
 
 function urlBase64ToUint8Array(b) {
@@ -33,7 +33,7 @@ function buildSnapshot() {
 
 window.enableSoluluPush = async function () {
   if (!('serviceWorker' in navigator) || !('PushManager' in window)) { if (window.showToast) showToast('⚠️ Not supported'); return false; }
-  if (VAPID_PUBLIC_KEY === 'PASTE_YOUR_PUBLIC_KEY_HERE') { if (window.showToast) showToast('⚠️ Key missing'); return false; }
+  if (VAPID_PUBLIC_KEY === 'BHyJEEwNxjMHlEc72kxu9onKGxKUdq0-PbcJzmZ_xMb5mmgqtGAMYzf_xgmwLswNvH3k9ZV5OVGFcU2kudbcYwg') { if (window.showToast) showToast('⚠️ Key missing'); return false; }
   const perm = await Notification.requestPermission();
   if (perm !== 'granted') { if (window.showToast) showToast('🔕 Blocked'); return false; }
   try {
