@@ -33,9 +33,6 @@ function buildSnapshot() {
 
 window.enableSoluluPush = async function () {
   if (!('serviceWorker' in navigator) || !('PushManager' in window)) { if (window.showToast) showToast('⚠️ Not supported'); return false; }
-  if (VAPID_PUBLIC_KEY === 'BHyJEEwNxjMHlEc72kxu9onKGxKUdq0-PbcJzmZ_xMb5mmgqtGAMYzf_xgmwLswNvH3k9ZV5OVGFcU2kudbcYwg') { if (window.showToast) showToast('⚠️ Key missing'); return false; }
-  const perm = await Notification.requestPermission();
-  if (perm !== 'granted') { if (window.showToast) showToast('🔕 Blocked'); return false; }
   try {
     const reg = await navigator.serviceWorker.ready;
     let sub = await reg.pushManager.getSubscription();
