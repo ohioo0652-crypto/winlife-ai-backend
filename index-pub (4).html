@@ -3049,6 +3049,7 @@
                 </div>
                 <div class="notif-status" id="notifStatus">Checking notification permissions...</div>
                 <button class="btn btn-primary" id="enableNotifBtn" style="margin-top:8px;">Enable notifications</button>
+                <button class="btn btn-ghost btn-sm" id="testNotifBtn" style="margin-top:8px;">🔔 Send test notification</button>
 
                 <h3 style="margin-top:16px;">📊 Data Management</h3>
                 <div class="privacy-note">🔒 All your data is stored locally in your browser. No data is sent to any server unless you explicitly use the AI chat feature. You can export your data anytime.</div>
@@ -9091,23 +9092,22 @@ Return plain text only.`;
 
     document.getElementById('enableNotifBtn').addEventListener('click', async () => {
         if (!('Notification' in window)) { showToast(t('notifNotSupported', 'Notifications not supported')); return; }
-        const perm = await Notification.requestPermission();
-        if (perm === 'granted') {
-            try {
-                new Notification('Win Life ✨', { body: t('inAppReminders', 'In-app reminders are on! Stay focused.') });
-            } catch(e) {}
+        const ok = await window.enableSoluluPush();
+        if (ok) {
             document.getElementById('notifStatus').textContent = '✅ ' + t('notifEnabled', 'Notifications enabled');
             state.notificationStatus = 'enabled';
             Storage.set('notification-status', 'enabled');
-            showToast(t('notificationsEnabled', 'Notifications enabled'));
             scheduleInAppReminders();
         } else {
             document.getElementById('notifStatus').textContent = '🚫 ' + t('notifBlocked', 'Notifications blocked. Please enable in browser settings.');
             state.notificationStatus = 'blocked';
             Storage.set('notification-status', 'blocked');
-            showToast(t('enableInBrowser', 'Please allow notifications in browser settings'));
         }
     });
+
+document.getElementById('testNotifBtn')?.addEventListener('click', () => {
+    if (window.testSoluluPush) window.testSoluluPush();
+});
 
     // ===== DAILY INTELLIGENCE =====
     function getDailyIntelligence() {
@@ -10738,9 +10738,16 @@ if (appRoot) {
 
     init();
     </script>
+<script src="notifications.js"></script>
 <script>
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
+  window.addEventListener('load', async () => {
+    try {
+      await navigator.serviceWorker.register('./sw.js', { scope: './' });
+    } catch (e) {
+      console.warn('SW registration failed:', e);
+    }
+  });
 }
 </script>
 <script>
