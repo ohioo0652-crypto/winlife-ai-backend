@@ -2,10 +2,13 @@
   "name": "SoluluMind",
   "short_name": "SoluluMind",
   "start_url": "./",
+  "id": "solulu-app",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#191228",
   "theme_color": "#191228",
-  "description": "Solulu \u2014 your personal accountability companion.",
+  "description": "SoluluMind — your personal accountability companion.",
+  "categories": ["productivity", "lifestyle", "health"],
   "icons": [
     {
       "src": "icons/icon-192.png",
@@ -19,5 +22,10 @@
       "type": "image/png",
       "purpose": "any maskable"
     }
+  ],
+  "shortcuts": [
+    { "name": "Prayer",  "url": "./index-pub.html#prayer" },
+    { "name": "Journal", "url": "./index-pub.html#journal" },
+    { "name": "Ask AI",  "url": "./index-pub.html#ai" }
   ]
 }
