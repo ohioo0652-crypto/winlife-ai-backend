@@ -9,6 +9,8 @@
     "node": ">=18"
   },
   "dependencies": {
-    "dotenv": "^17.4.2"
+    "dotenv": "^17.4.2",
+    "web-push": "^3.6.7",
+    "@vercel/kv": "^2.0.0"
   }
 }
