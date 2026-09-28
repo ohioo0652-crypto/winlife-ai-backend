@@ -1,6 +1,6 @@
-import webpush from 'web-push';
-import { kv } from '@vercel/kv';
-import { buildMessage } from '../lib/messages.js';
+const webpush = require('web-push');
+const { kv } = require('@Vercel/kv');
+const { buildMessage } = require('../lib/messages.js');
 
 webpush.setVapidDetails(
   'mailto:hello@solulu.app',
@@ -20,7 +20,7 @@ function localDateKey(tz) {
   return `${p.find(x=>x.type==='year').value}-${p.find(x=>x.type==='month').value}-${p.find(x=>x.type==='day').value}`;
 }
 
-export default async function handler(req, res) {
+async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -38,8 +38,6 @@ export default async function handler(req, res) {
       ? JSON.parse(existingRaw)
       : (existingRaw || null);
 
-    const existing = typeof existingRaw === 'string' ? JSON.parse(existingRaw) : (existingRaw || null);
- (Fix push notification subscription handling)
 
     const record = {
       subscription: body.subscription,
@@ -134,3 +132,7 @@ export default async function handler(req, res) {
 
   return res.status(400).json({ error: 'unknown_action' });
 }
+
+
+module.exports = handler;
+
