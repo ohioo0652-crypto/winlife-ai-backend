@@ -25,7 +25,7 @@ async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') return res.status(200).end();
-  const body = req.body || {};
+  const body = req.body || {}; if (req.method === 'GET') body.action = 'cron';
 
   /* ─── SAVE / UPDATE SUBSCRIPTION ─── */
   if (body.action === 'subscribe') {
