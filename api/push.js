@@ -33,7 +33,9 @@ export default async function handler(req, res) {
     const id = body.subscription.endpoint;
 
     const existingRaw = await kv.hget('solulu:subs', id);
-    const existing = existingRaw ? JSON.parse(existingRaw) : null;
+    const existing = typeof existingRaw === 'string'
+      ? JSON.parse(existingRaw)
+      : (existingRaw || null);
 
     const record = {
       subscription: body.subscription,
