@@ -1,4 +1,4 @@
-const BACKEND = 'https://winlife-ai-backend.vercel.app';
+const BACKEND = '';
 const VAPID_PUBLIC_KEY = 'BHyJEEwNxjMHlEc72kxu9onKGxKUdq0-PbcJzmZ_xMb5mmgqtGAMYzf_xgmwLswNvH3k9ZV5OVGFcU2kudbcYwg';
 
 function urlBase64ToUint8Array(b) {
