@@ -98,7 +98,7 @@ async function handler(req, res) {
 
         const sentToday = (await kv.get(`solulu:count:${id}:${dateKey}`)) || 0;
         const lastRaw = await kv.get(`solulu:last:${id}`);
-        const last = lastRaw ? JSON.parse(lastRaw) : null;
+        const last = typeof lastRaw === 'string' ? JSON.parse(lastRaw) : (lastRaw || null);
 
         // frequency cap and spacing
         if (sentToday >= 4) { skipped++; continue; }
