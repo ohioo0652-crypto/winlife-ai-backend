@@ -38,7 +38,7 @@ function localDateKey(tz) {
     timeZone: tz
   }).formatToParts(new Date());
 
-  return `${p.find(x => x.type === 'year').value}-${p.find(x => x.type === 'month').value}-${p.find(x => x.type === 'day').value}`;
+  return p.find(x => x.type === 'year').value + '-' + p.find(x => x.type === 'month').value + '-' + p.find(x => x.type === 'day').value;
 }
 
 async function handler(req, res) {
@@ -121,7 +121,7 @@ async function handler(req, res) {
   if (body.action === 'cron') {
     const auth = req.headers.authorization;
 
-    if (auth !== `Bearer ${process.env.SOLULU_CRON_SECRET}`) {
+    if (auth !== 'Bearer ' + process.env.SOLULU_CRON_SECRET) {
       return res.status(401).json({ error: 'unauthorized' });
     }
 
