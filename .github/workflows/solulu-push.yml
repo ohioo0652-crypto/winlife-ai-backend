@@ -1,0 +1,18 @@
+name: Solulu Push Scheduler
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+jobs:
+  send-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Trigger Solulu notifications
+        run: |
+          curl -fsS -X POST "https://winlife-ai-backend.vercel.app/api/push" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer ${{ secrets.SOLULU_CRON_SECRET }}" \
+            -d '{"action":"cron"}'

@@ -23,7 +23,7 @@ function localDateKey(tz) {
 async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   if (req.method === 'OPTIONS') return res.status(200).end();
   const body = req.body || {}; if (req.method === 'GET') body.action = 'cron';
 
@@ -75,6 +75,11 @@ async function handler(req, res) {
 
   /* ─── CRON: SEND DUE NOTIFICATIONS ─── */
   if (body.action === 'cron') {
+    const auth = req.headers.authorization;
+    if (auth !== `Bearer ${process.env.SOLULU_CRON_SECRET}`) {
+      return res.status(401).json({ error: 'unauthorized' });
+    }
+
     const ids = (await kv.smembers('solulu:all')) || [];
     let sent = 0, skipped = 0, failed = 0;
 
