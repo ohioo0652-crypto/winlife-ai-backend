@@ -1,5 +1,5 @@
 const webpush = require('web-push');
-const { kv } = require('@Vercel/kv');
+const { kv } = require('@vercel/kv');
 const { buildMessage } = require('../lib/messages.js');
 
 webpush.setVapidDetails(
