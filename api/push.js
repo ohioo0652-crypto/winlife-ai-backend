@@ -82,7 +82,7 @@ async function handler(req, res) {
       try {
         const raw = await kv.hget('solulu:subs', id);
         if (!raw) { skipped++; continue; }
-        const u = JSON.parse(raw);
+        const u = typeof raw === 'string' ? JSON.parse(raw) : raw;
 
         const tz = u.timezone || 'UTC';
         const hour = localHour(tz);
