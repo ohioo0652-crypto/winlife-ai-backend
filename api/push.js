@@ -1,6 +1,5 @@
-```js
 const webpush = require('web-push');
-const { kv } = require('@vercel/kv');
+const { kv } = require('@Vercel/kv');
 const { buildMessage } = require('../lib/messages.js');
 
 webpush.setVapidDetails(
@@ -38,13 +37,22 @@ function localDateKey(tz) {
     timeZone: tz
   }).formatToParts(new Date());
 
-  return p.find(x => x.type === 'year').value + '-' + p.find(x => x.type === 'month').value + '-' + p.find(x => x.type === 'day').value;
+  return (
+    p.find(x => x.type === 'year').value +
+    '-' +
+    p.find(x => x.type === 'month').value +
+    '-' +
+    p.find(x => x.type === 'day').value
+  );
 }
 
 async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'Content-Type, Authorization'
+  );
 
   if (req.method === 'OPTIONS') return res.status(200).end();
 
@@ -196,8 +204,13 @@ async function handler(req, res) {
           continue;
         }
 
+        const subscription =
+          typeof u.subscription === 'string'
+            ? JSON.parse(u.subscription)
+            : u.subscription;
+
         await webpush.sendNotification(
-          u.subscription,
+          subscription,
           JSON.stringify({
             title: msg.title,
             body: msg.body,
@@ -251,9 +264,8 @@ async function handler(req, res) {
   }
 
   return res.status(400).json({
-    error: 'unknown_action'a
+    error: 'unknown_action'
   });
 }
 
 module.exports = handler;
-```
