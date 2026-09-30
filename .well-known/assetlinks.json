@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "com.solulu.mind",
+        "sha256_cert_fingerprints": ["58:A3:9F:A4:F0:3A:E0:9F:B6:4A:A3:98:7A:6C:0A:57:2D:3F:01:13:23:8D:76:6E:54:82:5D:91:21:D9:5F:1C"]
+      }
+    }]
